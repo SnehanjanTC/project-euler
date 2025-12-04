@@ -1,0 +1,121 @@
+{
+  "matches": [
+    {
+      "file1_column": "operating_system_names",
+      "file2_column": "rating",
+      "is_correct": false,
+      "correct_match": null,
+      "user_note": null,
+      "timestamp": "2025-12-04T11:21:16.534660"
+    },
+    {
+      "file1_column": "hostname",
+      "file2_column": "tool_name",
+      "is_correct": false,
+      "correct_match": null,
+      "user_note": null,
+      "timestamp": "2025-12-04T11:21:25.147432"
+    },
+    {
+      "file1_column": "operating_system_names",
+      "file2_column": "rating",
+      "is_correct": false,
+      "correct_match": null,
+      "user_note": null,
+      "timestamp": "2025-12-04T11:21:37.697469"
+    },
+    {
+      "file1_column": "operating_system_names",
+      "file2_column": "rating",
+      "is_correct": false,
+      "correct_match": null,
+      "user_note": null,
+      "timestamp": "2025-12-04T11:22:39.598240"
+    },
+    {
+      "file1_column": "operating_system_names",
+      "file2_column": "rating",
+      "is_correct": false,
+      "correct_match": null,
+      "user_note": null,
+      "timestamp": "2025-12-04T11:23:22.967389"
+    },
+    {
+      "file1_column": "operating_system_names",
+      "file2_column": "rating",
+      "is_correct": false,
+      "correct_match": null,
+      "user_note": null,
+      "timestamp": "2025-12-04T11:40:10.389457"
+    },
+    {
+      "file1_column": "operating_system_names",
+      "file2_column": "rating",
+      "is_correct": false,
+      "correct_match": null,
+      "user_note": null,
+      "timestamp": "2025-12-04T11:40:23.702363"
+    },
+    {
+      "file1_column": "process_name",
+      "file2_column": "process_name",
+      "is_correct": true,
+      "correct_match": null,
+      "user_note": null,
+      "timestamp": "2025-12-04T12:40:16.807251",
+      "name_similarity": 1,
+      "data_similarity": 1,
+      "pattern_score": 0,
+      "confidence": 80
+    },
+    {
+      "file1_column": "severity",
+      "file2_column": "severity",
+      "is_correct": false,
+      "correct_match": null,
+      "user_note": null,
+      "timestamp": "2025-12-04T12:56:28.949512",
+      "name_similarity": 1,
+      "data_similarity": 0.4,
+      "pattern_score": 0,
+      "confidence": 59
+    },
+    {
+      "file1_column": "operating_system_names",
+      "file2_column": "rating",
+      "is_correct": false,
+      "correct_match": null,
+      "user_note": null,
+      "timestamp": "2025-12-04T16:06:00.493953",
+      "name_similarity": 0.7,
+      "data_similarity": 0.8,
+      "pattern_score": 0,
+      "confidence": 29.5
+    },
+    {
+      "file1_column": "name",
+      "file2_column": "tool_name",
+      "is_correct": false,
+      "correct_match": null,
+      "user_note": null,
+      "timestamp": "2025-12-04T17:57:23.778799",
+      "name_similarity": 0.7,
+      "data_similarity": 0.32000000000000006,
+      "pattern_score": 0,
+      "confidence": 52.63826918204747
+    },
+    {
+      "file1_column": "hostname",
+      "file2_column": "name",
+      "is_correct": true,
+      "correct_match": null,
+      "user_note": null,
+      "timestamp": "2025-12-04T18:59:52.268997",
+      "name_similarity": 0.7,
+      "data_similarity": 0.32000000000000006,
+      "pattern_score": 0,
+      "confidence": 42.54869854567593
+    }
+  ],
+  "corrections": {}
+}
