@@ -3,8 +3,9 @@ import json
 import re
 from app.utils.security import sanitize_input
 from app.services.llm import call_ollama
+from typing import Optional, Union, Any, Tuple, List, Dict
 
-def execute_safe_pandas_code(df: pd.DataFrame, code: str) -> tuple[any, str]:  # type: ignore
+def execute_safe_pandas_code(df: pd.DataFrame, code: str) -> Tuple[Any, str]:  # type: ignore
     """Execute pandas code safely and return result with enhanced security"""
     # Sanitize code input
     code = sanitize_input(code, max_length=5000)
@@ -287,7 +288,7 @@ def generate_comprehensive_analysis(df: pd.DataFrame) -> dict:
     
     return analysis
 
-def find_matching_column(columns: list, col_name: str) -> str | None:
+def find_matching_column(columns: list, col_name: str) -> Optional[str]:
     """Find matching column name with fuzzy matching"""
     col_name_lower = col_name.lower().strip()
     # Exact match

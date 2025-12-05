@@ -8,6 +8,7 @@ env/
 venv/
 ENV/
 *.csv
+!test_data/*.csv
 
 # Node
 node_modules/

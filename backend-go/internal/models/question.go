@@ -1,0 +1,37 @@
+package models
+
+// QuestionType constants
+const (
+	QuestionTypeDatasetPurpose  = "dataset_purpose"
+	QuestionTypeBusinessDomain  = "business_domain"
+	QuestionTypeKeyEntities     = "key_entities"
+	QuestionTypeTemporalContext = "temporal_context"
+	QuestionTypeColumnSemantic  = "column_semantic"
+	QuestionTypeRelationships   = "relationships"
+	QuestionTypeCustomMappings  = "custom_mappings"
+	QuestionTypeExclusions      = "exclusions"
+)
+
+// Question represents a context collection question
+type Question struct {
+	ID       string                 `json:"id"`
+	Type     string                 `json:"type"`
+	Text     string                 `json:"text"`
+	Options  []string               `json:"options"`
+	Required bool                   `json:"required"`
+	Metadata map[string]interface{} `json:"metadata"`
+}
+
+// DataAnalysisResult holds analysis of a dataframe for question generation
+type DataAnalysisResult struct {
+	NumRows          int
+	NumColumns       int
+	ColumnNames      []string
+	ColumnTypes      map[string]string
+	HasDates         bool
+	HasNumeric       bool
+	HasText          bool
+	PotentialIDs     []string
+	PotentialDates   []string
+	PotentialAmounts []string
+}

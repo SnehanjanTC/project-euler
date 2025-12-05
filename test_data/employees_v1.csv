@@ -1,0 +1,6 @@
+emp_id,full_name,dept,join_date,email,status
+E001,John Smith,Engineering,2022-01-15,john.smith@example.com,Active
+E002,Jane Doe,Marketing,2021-06-20,jane.doe@example.com,Active
+E003,Bob Wilson,Finance,2023-03-10,bob.wilson@example.com,Active
+E004,Alice Brown,Engineering,2020-11-05,alice.brown@example.com,On Leave
+E005,Charlie Davis,HR,2022-09-01,charlie.d@example.com,Active
