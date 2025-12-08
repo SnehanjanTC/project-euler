@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Send, Upload, Loader2, FileText, X, CheckCircle2 } from "lucide-react"
+import { Send, Upload, Loader2, FileText, X, CheckCircle2, Database, Server } from "lucide-react"
 import { API_ENDPOINTS } from "@/lib/api-config"
 
 interface Message {
@@ -34,10 +34,71 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const fileInputRef2 = useRef<HTMLInputElement>(null)
   const messageIdCounter = useRef(0)
-  
+
   const generateMessageId = () => {
     messageIdCounter.current += 1
     return `msg-${Date.now()}-${messageIdCounter.current}`
+  }
+
+
+  const [dataSource, setDataSource] = useState<'csv' | 'db'>('csv')
+  const [dbConfig, setDbConfig] = useState({
+    type: 'postgres',
+    host: 'localhost',
+    port: 5432,
+    user: 'postgres',
+    password: '',
+    dbname: 'postgres',
+    sslmode: 'disable'
+  })
+  const [dbTables, setDbTables] = useState<string[]>([])
+  const [connecting, setConnecting] = useState(false)
+  const [connected, setConnected] = useState(false)
+
+  const handleConnect = async () => {
+    setConnecting(true)
+    try {
+      const res = await fetch(`${API_ENDPOINTS.upload.replace('/analyze-file', '')}/db/connect`, {
+        method: 'POST',
+        body: JSON.stringify(dbConfig)
+      })
+      if (res.ok) {
+        setConnected(true)
+        const tables = await fetch(`${API_ENDPOINTS.upload.replace('/analyze-file', '')}/db/tables`).then(r => r.json())
+        setDbTables(tables.tables || [])
+        setMessages(prev => [...prev, { id: generateMessageId(), role: "assistant", content: "✅ Connected to Database! Select tables to analyze." }])
+      } else {
+        throw new Error("Connection failed")
+      }
+    } catch (e) {
+      setMessages(prev => [...prev, { id: generateMessageId(), role: "assistant", content: "❌ Connection failed. Check credentials." }])
+    } finally {
+      setConnecting(false)
+    }
+  }
+
+  const handleSelectTable = async (tableName: string, fileIndex: number) => {
+    try {
+      const res = await fetch(`${API_ENDPOINTS.upload.replace('/analyze-file', '')}/db/analyze`, {
+        method: 'POST',
+        body: JSON.stringify({ table_name: tableName, file_index: fileIndex })
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setCsvLoaded(true)
+        onCsvLoadedChange?.(true)
+        if (fileIndex === 1) {
+          setFileName(`DB: ${tableName}`)
+          setCsvInfo({ rows: data.rows, columns: data.columns, column_names: data.column_names })
+        } else {
+          setFileName2(`DB: ${tableName}`)
+          setCsvInfo2({ rows: data.rows, columns: data.columns, column_names: data.column_names })
+        }
+        checkStatus() // updates context
+      }
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   const generateExampleQuestions = async (columns: string[]): Promise<string[]> => {
@@ -48,14 +109,14 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
         const data = await response.json()
         const numericCols = data.numeric_columns || []
         const categoricalCols = data.categorical_columns || []
-        
+
         const examples: string[] = []
-        
+
         // Generate questions based on numeric columns
         if (numericCols.length > 0) {
           const firstNumeric = numericCols[0]
           const colName = firstNumeric.toLowerCase()
-          
+
           // Check for common numeric column patterns
           if (colName.includes('salary') || colName.includes('price') || colName.includes('amount') || colName.includes('cost')) {
             examples.push(`What is the average ${firstNumeric}?`, `Show me the top 5 highest ${firstNumeric}`)
@@ -65,36 +126,36 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
             examples.push(`What is the average ${firstNumeric}?`, `Show me the top 5 highest ${firstNumeric}`)
           }
         }
-        
+
         // Generate questions based on categorical columns
         if (categoricalCols.length > 0) {
           const firstCategorical = categoricalCols[0]
           const colName = firstCategorical.toLowerCase()
-          
+
           if (colName.includes('city') || colName.includes('location') || colName.includes('place')) {
             examples.push(`How many people are in each ${firstCategorical}?`)
           } else {
             examples.push(`How many records are in each ${firstCategorical}?`)
           }
         }
-        
+
         // Add a statistics question if we have numeric columns and need more examples
         if (numericCols.length > 0 && examples.length < 4) {
           const firstNumeric = numericCols[0]
           examples.push(`What are the statistics for ${firstNumeric}?`)
         }
-        
+
         // Add a general overview question if we need more examples
         if (examples.length < 4) {
           examples.push(`Give me an overview of the data`)
         }
-        
+
         return examples.slice(0, 4) // Return max 4 examples
       }
     } catch (error) {
       console.error("Error generating example questions:", error)
     }
-    
+
     // Fallback to generic examples
     return [
       "What is the average value?",
@@ -124,7 +185,7 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
       if (data.loaded) {
         setCsvLoaded(true)
         onCsvLoadedChange?.(true)
-        
+
         if (data.file1) {
           setCsvInfo({
             rows: data.file1.rows,
@@ -132,7 +193,7 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
             column_names: data.file1.column_names,
           })
         }
-        
+
         if (data.file2) {
           setCsvInfo2({
             rows: data.file2.rows,
@@ -140,7 +201,7 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
             column_names: data.file2.column_names,
           })
         }
-        
+
         let statusMessage = "✅ CSV file(s) loaded successfully!\n\n"
         if (data.file1) {
           statusMessage += `📊 File 1 Overview:\n• Rows: ${data.file1.rows}\n• Columns: ${data.file1.columns}\n• Column names: ${data.file1.column_names.join(", ")}\n\n`
@@ -151,7 +212,7 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
         if (data.file1 && data.file2) {
           statusMessage += `🔗 Both files loaded! You can now analyze correlations between columns from both files.\n\n`
         }
-        
+
         setMessages([{
           id: generateMessageId(),
           role: "assistant",
@@ -226,7 +287,7 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
       const data = await response.json()
       setCsvLoaded(true)
       onCsvLoadedChange?.(true)
-      
+
       if (fileIndex === 1) {
         setFileName(file.name)
         setCsvInfo({
@@ -242,17 +303,17 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
           column_names: data.column_names,
         })
       }
-      
+
       // Check status to see if both files are loaded
       const statusResponse = await fetch(API_ENDPOINTS.status)
       const statusData = await statusResponse.json()
-      
+
       let successMessage = `✅ CSV file ${fileIndex} "${file.name}" uploaded successfully!\n\n📊 File ${fileIndex} Overview:\n• Rows: ${data.rows}\n• Columns: ${data.columns}\n• Column names: ${data.column_names.join(", ")}\n\n`
-      
+
       if (statusData.file1 && statusData.file2) {
         successMessage += `🔗 Both files are now loaded! You can analyze correlations between columns from both files.\n\n`
       }
-      
+
       setMessages([{
         id: generateMessageId(),
         role: "assistant",
@@ -261,12 +322,12 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
     } catch (error: any) {
       console.error("Upload error:", error)
       let errorMessage = error.message || "Unknown error occurred"
-      
+
       // Provide more helpful error messages
       if (error.message.includes("Failed to fetch") || error.message.includes("NetworkError") || error.name === "TypeError") {
         errorMessage = "Cannot connect to backend server. Please make sure the backend is running on port 8001. Start it with: cd backend && python main.py"
       }
-      
+
       setMessages([{
         id: generateMessageId(),
         role: "assistant",
@@ -318,14 +379,14 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
       }
 
       const data = await response.json()
-      
+
       // Handle new response format
       let assistantMessage: Message = {
         id: generateMessageId(),
         role: "assistant",
         content: data.explanation || data.raw_response || "I've processed your query.",
       }
-      
+
       if (data.result) {
         assistantMessage.content += `\n\n📊 Result:\n\`\`\`\n${data.result}\n\`\`\``
         if (data.result_data) {
@@ -333,7 +394,7 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
           assistantMessage.resultType = data.result_type
         }
       }
-      
+
       // Add column similarity information if available
       if (data.column_similarities && data.column_similarities.length > 0) {
         assistantMessage.content += `\n\n🔗 Column Similarities Found:\n`
@@ -341,12 +402,12 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
           assistantMessage.content += `• ${sim.file1_column} ↔ ${sim.file2_column}: ${(sim.similarity * 100).toFixed(1)}% similarity (${sim.confidence.toFixed(1)}% confidence, ${sim.type})\n`
         })
       }
-      
+
       if (data.error) {
         assistantMessage.error = data.error
         assistantMessage.content += `\n\n⚠️ Error: ${data.error}`
       }
-      
+
       setMessages(prev => [...prev, assistantMessage])
     } catch (error: any) {
       setMessages(prev => [...prev, {
@@ -380,7 +441,7 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
         fileInputRef2.current.value = ''
       }
     }
-    
+
     // Check if both files are removed
     if ((fileIndex === 1 && !csvInfo2) || (fileIndex === 2 && !csvInfo)) {
       setCsvLoaded(false)
@@ -403,122 +464,233 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
           </div>
         </CardHeader>
         <CardContent className="flex-1 flex flex-col overflow-hidden p-6 min-h-0">
-          {/* File Upload Section */}
+          {/* Data Source Toggle */}
+          <div className="flex gap-2 mb-4 pb-2 border-b border-gray-100">
+            <Button
+              variant={dataSource === 'csv' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setDataSource('csv')}
+              className={dataSource === 'csv' ? "bg-black text-white" : "text-gray-600"}
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              CSV Upload
+            </Button>
+            <Button
+              variant={dataSource === 'db' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setDataSource('db')}
+              className={dataSource === 'db' ? "bg-black text-white" : "text-gray-600"}
+            >
+              <Database className="h-4 w-4 mr-2" />
+              Database
+            </Button>
+          </div>
+
+          {/* Data Source UI */}
           <div className="mb-4 pb-4 border-b border-gray-300 flex-shrink-0">
-            <div className="space-y-3">
-              {/* File 1 Upload */}
-              <div className="flex items-center gap-3 flex-wrap">
-                <label htmlFor="file-upload-1" className="cursor-pointer">
-                  <Button variant="outline" asChild disabled={uploading} className="gap-2 border-gray-300 text-black hover:bg-gray-50">
-                    <span>
-                      {uploading ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          Uploading...
-                        </>
-                      ) : (
-                        <>
-                          <Upload className="h-4 w-4" />
-                          {csvInfo ? "Replace CSV 1" : "Upload CSV 1"}
-                        </>
-                      )}
-                    </span>
-                  </Button>
-                </label>
-                <input
-                  ref={fileInputRef}
-                  id="file-upload-1"
-                  type="file"
-                  accept=".csv"
-                  onChange={(e) => handleFileUpload(e, 1)}
-                  className="hidden"
-                />
+            {dataSource === 'db' ? (
+              <div className="space-y-4">
+                {!connected ? (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium">Host</label>
+                        <Input value={dbConfig.host} onChange={e => setDbConfig({ ...dbConfig, host: e.target.value })} className="h-8" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium">Port</label>
+                        <Input value={dbConfig.port} onChange={e => setDbConfig({ ...dbConfig, port: parseInt(e.target.value) })} className="h-8" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium">User</label>
+                        <Input value={dbConfig.user} onChange={e => setDbConfig({ ...dbConfig, user: e.target.value })} className="h-8" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium">DB Name</label>
+                        <Input value={dbConfig.dbname} onChange={e => setDbConfig({ ...dbConfig, dbname: e.target.value })} className="h-8" />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium">Password</label>
+                      <Input type="password" value={dbConfig.password} onChange={e => setDbConfig({ ...dbConfig, password: e.target.value })} className="h-8" />
+                    </div>
+                    <Button onClick={handleConnect} disabled={connecting} className="w-full h-8 bg-blue-600 hover:bg-blue-700 text-white">
+                      {connecting ? <Loader2 className="h-3 w-3 animate-spin mr-2" /> : <Server className="h-3 w-3 mr-2" />}
+                      Connect
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-green-600">Connected to {dbConfig.dbname}</span>
+                      <Button variant="ghost" size="sm" onClick={() => setConnected(false)} className="h-6 text-xs text-red-500">Disconnect</Button>
+                    </div>
+                    <div className="text-xs text-gray-500 mb-2">Select a table to analyze:</div>
+                    <div className="max-h-40 overflow-y-auto space-y-1 border rounded p-2">
+                      {dbTables.map(table => (
+                        <div key={table} className="flex items-center justify-between p-1 hover:bg-gray-50 rounded">
+                          <span className="text-sm font-mono truncate max-w-[120px]" title={table}>{table}</span>
+                          <div className="flex gap-1">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-6 text-[10px] px-2"
+                              onClick={() => handleSelectTable(table, 1)}
+                            >
+                              File 1
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-6 text-[10px] px-2"
+                              onClick={() => handleSelectTable(table, 2)}
+                            >
+                              File 2
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Show Selected Status even in DB mode */}
+                {(csvInfo || csvInfo2) && (
+                  <div className="mt-3 pt-3 border-t">
+                    {csvInfo && (
+                      <div className="flex items-center gap-2 text-sm text-green-700 mb-1">
+                        <CheckCircle2 className="h-3 w-3" />
+                        <span className="truncate">File 1: {fileName} ({csvInfo.rows} rows)</span>
+                      </div>
+                    )}
+                    {csvInfo2 && (
+                      <div className="flex items-center gap-2 text-sm text-blue-700">
+                        <CheckCircle2 className="h-3 w-3" />
+                        <span className="truncate">File 2: {fileName2} ({csvInfo2.rows} rows)</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              // CSV Mode (Existing)
+              <div className="space-y-3">
+                {/* File 1 Upload */}
+                <div className="flex items-center gap-3 flex-wrap">
+                  <label htmlFor="file-upload-1" className="cursor-pointer">
+                    <Button variant="outline" asChild disabled={uploading} className="gap-2 border-gray-300 text-black hover:bg-gray-50">
+                      <span>
+                        {uploading ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="h-4 w-4" />
+                            {csvInfo ? "Replace CSV 1" : "Upload CSV 1"}
+                          </>
+                        )}
+                      </span>
+                    </Button>
+                  </label>
+                  <input
+                    ref={fileInputRef}
+                    id="file-upload-1"
+                    type="file"
+                    accept=".csv"
+                    onChange={(e) => handleFileUpload(e, 1)}
+                    className="hidden"
+                  />
+                  {csvInfo && (
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-md border border-green-200">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <div className="flex items-center gap-3">
+                        <div className="text-sm">
+                          <span className="font-medium text-green-700">{fileName}</span>
+                          <span className="text-gray-600 ml-2">
+                            {csvInfo.rows.toLocaleString()} rows × {csvInfo.columns} columns
+                          </span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveFile(1)}
+                          className="h-6 w-6 p-0 hover:bg-green-100 text-green-700"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* File 2 Upload */}
+                <div className="flex items-center gap-3 flex-wrap">
+                  <label htmlFor="file-upload-2" className="cursor-pointer">
+                    <Button variant="outline" asChild disabled={uploading} className="gap-2 border-gray-300 text-black hover:bg-gray-50">
+                      <span>
+                        {uploading ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="h-4 w-4" />
+                            {csvInfo2 ? "Replace CSV 2" : "Upload CSV 2"}
+                          </>
+                        )}
+                      </span>
+                    </Button>
+                  </label>
+                  <input
+                    ref={fileInputRef2}
+                    id="file-upload-2"
+                    type="file"
+                    accept=".csv"
+                    onChange={(e) => handleFileUpload(e, 2)}
+                    className="hidden"
+                  />
+                  {csvInfo2 && (
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-md border border-blue-200">
+                      <CheckCircle2 className="h-4 w-4 text-blue-600" />
+                      <div className="flex items-center gap-3">
+                        <div className="text-sm">
+                          <span className="font-medium text-blue-700">{fileName2}</span>
+                          <span className="text-gray-600 ml-2">
+                            {csvInfo2.rows.toLocaleString()} rows × {csvInfo2.columns} columns
+                          </span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveFile(2)}
+                          className="h-6 w-6 p-0 hover:bg-blue-100 text-blue-700"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
                 {csvInfo && (
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-md border border-green-200">
-                    <CheckCircle2 className="h-4 w-4 text-green-600" />
-                    <div className="flex items-center gap-3">
-                      <div className="text-sm">
-                        <span className="font-medium text-green-700">{fileName}</span>
-                        <span className="text-gray-600 ml-2">
-                          {csvInfo.rows.toLocaleString()} rows × {csvInfo.columns} columns
-                        </span>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRemoveFile(1)}
-                        className="h-6 w-6 p-0 hover:bg-green-100 text-green-700"
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
+                  <div className="mt-3 text-xs text-muted-foreground">
+                    <span className="font-medium">File 1 Columns:</span> {csvInfo.column_names.join(", ")}
                   </div>
                 )}
-              </div>
-              
-              {/* File 2 Upload */}
-              <div className="flex items-center gap-3 flex-wrap">
-                <label htmlFor="file-upload-2" className="cursor-pointer">
-                  <Button variant="outline" asChild disabled={uploading} className="gap-2 border-gray-300 text-black hover:bg-gray-50">
-                    <span>
-                      {uploading ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          Uploading...
-                        </>
-                      ) : (
-                        <>
-                          <Upload className="h-4 w-4" />
-                          {csvInfo2 ? "Replace CSV 2" : "Upload CSV 2"}
-                        </>
-                      )}
-                    </span>
-                  </Button>
-                </label>
-                <input
-                  ref={fileInputRef2}
-                  id="file-upload-2"
-                  type="file"
-                  accept=".csv"
-                  onChange={(e) => handleFileUpload(e, 2)}
-                  className="hidden"
-                />
                 {csvInfo2 && (
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-md border border-blue-200">
-                    <CheckCircle2 className="h-4 w-4 text-blue-600" />
-                    <div className="flex items-center gap-3">
-                      <div className="text-sm">
-                        <span className="font-medium text-blue-700">{fileName2}</span>
-                        <span className="text-gray-600 ml-2">
-                          {csvInfo2.rows.toLocaleString()} rows × {csvInfo2.columns} columns
-                        </span>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRemoveFile(2)}
-                        className="h-6 w-6 p-0 hover:bg-blue-100 text-blue-700"
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    <span className="font-medium">File 2 Columns:</span> {csvInfo2.column_names.join(", ")}
                   </div>
                 )}
-              </div>
-            </div>
-            {csvInfo && (
-              <div className="mt-3 text-xs text-muted-foreground">
-                <span className="font-medium">File 1 Columns:</span> {csvInfo.column_names.join(", ")}
-              </div>
-            )}
-            {csvInfo2 && (
-              <div className="mt-2 text-xs text-muted-foreground">
-                <span className="font-medium">File 2 Columns:</span> {csvInfo2.column_names.join(", ")}
-              </div>
-            )}
-            {csvInfo && csvInfo2 && (
-              <div className="mt-2 text-xs text-blue-600 font-medium">
-                🔗 Both files loaded! You can analyze correlations between columns from both files.
+                {csvInfo && csvInfo2 && (
+                  <div className="mt-2 text-xs text-blue-600 font-medium">
+                    🔗 Both files loaded! You can analyze correlations between columns from both files.
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -529,12 +701,12 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
               <div className="text-center text-muted-foreground py-12">
                 <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p className="text-lg font-medium mb-2">
-                  {csvLoaded 
+                  {csvLoaded
                     ? "Ready to analyze your data! 🚀"
                     : "Welcome! 👋"}
                 </p>
                 <p className="text-sm">
-                  {csvLoaded 
+                  {csvLoaded
                     ? "Ask a question about your CSV data to get started. Try asking about averages, counts, filters, or summaries."
                     : "Upload a CSV file to start asking questions about your data using natural language."}
                 </p>
@@ -543,16 +715,14 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
               messages.map((message) => (
                 <div
                   key={message.id || `msg-${message.role}-${message.content.slice(0, 20)}`}
-                  className={`flex ${
-                    message.role === "user" ? "justify-end" : "justify-start"
-                  }`}
+                  className={`flex ${message.role === "user" ? "justify-end" : "justify-start"
+                    }`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-lg px-4 py-3 ${
-                      message.role === "user"
-                        ? "bg-black text-white"
-                        : "bg-gray-50 border border-gray-300 text-black"
-                    }`}
+                    className={`max-w-[85%] rounded-lg px-4 py-3 ${message.role === "user"
+                      ? "bg-black text-white"
+                      : "bg-gray-50 border border-gray-300 text-black"
+                      }`}
                   >
                     <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
                     {message.error && (
@@ -600,8 +770,8 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
               disabled={loading || !csvLoaded}
               className="flex-1 border-gray-300 text-black placeholder:text-gray-400 focus:border-gray-400"
             />
-            <Button 
-              onClick={handleSend} 
+            <Button
+              onClick={handleSend}
               disabled={loading || !csvLoaded || !input.trim()}
               size="default"
               className="bg-black text-white hover:bg-gray-800 border border-black"

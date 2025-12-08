@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
@@ -18,53 +19,67 @@ func NewCSVService() *CSVService {
 	return &CSVService{}
 }
 
-// AnalyzeFile reads a CSV file and returns analysis results
-func (s *CSVService) AnalyzeFile(filePath string) (models.DataAnalysisResult, error) {
-	file, err := os.Open(filePath)
-	if err != nil {
-		return models.DataAnalysisResult{}, err
-	}
-	defer file.Close()
-
-	reader := csv.NewReader(file)
-
-	// Read header
-	headers, err := reader.Read()
-	if err != nil {
-		return models.DataAnalysisResult{}, err
-	}
-
-	// Initialize result
+// AnalyzeData performs analysis on generic data (from CSV or DB)
+func (s *CSVService) AnalyzeData(data []map[string]interface{}, columns []string) (models.DataAnalysisResult, error) {
 	result := models.DataAnalysisResult{
-		ColumnNames:      headers,
+		ColumnNames:      columns,
 		ColumnTypes:      make(map[string]string),
 		PotentialIDs:     []string{},
 		PotentialDates:   []string{},
 		PotentialAmounts: []string{},
+		NumRows:          len(data),
+		NumColumns:       len(columns),
 	}
 
-	// Read rows to infer types (sample first 100 rows or all)
-	// For simplicity, we'll read all but be mindful of memory.
-	// In a real heavy app, we'd stream or sample.
-	rows := [][]string{}
-	for {
-		record, err := reader.Read()
-		if err == io.EOF {
+	// Infer types
+	for _, colName := range columns {
+		colType := "string" // default
+
+		// Check first non-nil value to guess type
+		// For robustness we should check a sample, but simplistic for now
+		foundType := false
+		for _, row := range data {
+			val := row[colName]
+			if val == nil {
+				continue
+			}
+
+			// If it's a string, we try to infer underlying type
+			if strVal, ok := val.(string); ok {
+				if strVal == "" {
+					continue
+				}
+				// Use the string inference logic
+				// We need a helper that takes a single string, or we reuse inferColumnType logic?
+				// Let's create a specialized helper for mixed inputs
+				colType = inferTypeFromValue(val)
+			} else {
+				// It's already typed (from DB)
+				switch val.(type) {
+				case int, int32, int64, float32, float64:
+					colType = "float" // Treat all numbers as float for simplicity in analysis or separate?
+					// Project Euler logic distinguished int/float.
+					// Let's refine.
+					if reflect.TypeOf(val).Kind() == reflect.Int || reflect.TypeOf(val).Kind() == reflect.Int64 {
+						colType = "int"
+					} else {
+						colType = "float"
+					}
+				case time.Time:
+					colType = "date"
+				default:
+					colType = "string"
+				}
+			}
+			foundType = true
 			break
 		}
-		if err != nil {
-			return models.DataAnalysisResult{}, err
+
+		if !foundType {
+			colType = "string" // All nulls or empty
 		}
-		rows = append(rows, record)
-	}
-	result.NumRows = len(rows)
-	result.NumColumns = len(headers)
 
-	// Infer types for each column
-	for i, colName := range headers {
-		colType := inferColumnType(rows, i)
 		result.ColumnTypes[colName] = colType
-
 		colLower := strings.ToLower(colName)
 
 		if colType == "int" || colType == "float" {
@@ -89,6 +104,63 @@ func (s *CSVService) AnalyzeFile(filePath string) (models.DataAnalysisResult, er
 	}
 
 	return result, nil
+}
+
+// AnalyzeFile reads a CSV file and returns analysis results
+func (s *CSVService) AnalyzeFile(filePath string) (models.DataAnalysisResult, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return models.DataAnalysisResult{}, err
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+
+	// Read header
+	headers, err := reader.Read()
+	if err != nil {
+		return models.DataAnalysisResult{}, err
+	}
+
+	// Read all rows and convert to map
+	var data []map[string]interface{}
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return models.DataAnalysisResult{}, err
+		}
+
+		rowMap := make(map[string]interface{})
+		for i, val := range record {
+			if i < len(headers) {
+				rowMap[headers[i]] = val
+			}
+		}
+		data = append(data, rowMap)
+	}
+
+	return s.AnalyzeData(data, headers)
+}
+
+func inferTypeFromValue(v interface{}) string {
+	strVal, ok := v.(string)
+	if !ok {
+		return "string"
+	}
+
+	if _, err := strconv.Atoi(strVal); err == nil {
+		return "int"
+	}
+	if _, err := strconv.ParseFloat(strVal, 64); err == nil {
+		return "float"
+	}
+	if isDateString(strVal) {
+		return "date"
+	}
+	return "string"
 }
 
 func inferColumnType(rows [][]string, colIndex int) string {

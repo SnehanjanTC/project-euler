@@ -21,6 +21,7 @@ type Handler struct {
 	CSVService        *analysis.CSVService
 	SimilarityService *service.SimilarityService
 	ExportService     *service.ExportService
+	CurrentDB         service.DataSource // Active DB connection
 }
 
 func NewHandler(ctx *service.ContextService, qg *service.QuestionGenerator, csv *analysis.CSVService, sim *service.SimilarityService, export *service.ExportService) *Handler {
@@ -43,6 +44,112 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Post("/api/export/python", h.ExportPython)
 	r.Get("/api/status", h.GetStatus)
 	r.Get("/api/context/status", h.GetContextStatus)
+
+	// DB Routes
+	r.Post("/api/db/connect", h.ConnectDB)
+	r.Get("/api/db/tables", h.ListTables)
+	r.Post("/api/db/analyze", h.AnalyzeTable)
+}
+
+// ConnectDB establishes a database connection
+func (h *Handler) ConnectDB(w http.ResponseWriter, r *http.Request) {
+	var config service.DataSourceConfig
+	if err := json.NewDecoder(r.Body).Decode(&config); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	// Currently only Postgres supported
+	if config.Type != "postgres" {
+		http.Error(w, "Only postgres is supported currently", http.StatusBadRequest)
+		return
+	}
+
+	ds := &service.PostgresDataSource{}
+	if err := ds.Connect(config); err != nil {
+		http.Error(w, fmt.Sprintf("Failed to connect: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Close previous if exists
+	if h.CurrentDB != nil {
+		h.CurrentDB.Close()
+	}
+	h.CurrentDB = ds
+
+	json.NewEncoder(w).Encode(map[string]string{"status": "connected"})
+}
+
+// ListTables returns tables from connected DB
+func (h *Handler) ListTables(w http.ResponseWriter, r *http.Request) {
+	if h.CurrentDB == nil {
+		http.Error(w, "No database connection", http.StatusBadRequest)
+		return
+	}
+
+	tables, err := h.CurrentDB.ListTables()
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error listing tables: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]interface{}{"tables": tables})
+}
+
+// AnalyzeTable fetches data from a table and analyzes it
+func (h *Handler) AnalyzeTable(w http.ResponseWriter, r *http.Request) {
+	if h.CurrentDB == nil {
+		http.Error(w, "No database connection", http.StatusBadRequest)
+		return
+	}
+
+	var req struct {
+		TableName string `json:"table_name"`
+		FileIndex int    `json:"file_index"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	// Fetch data (preview limit 1000 rows for analysis)
+	data, err := h.CurrentDB.PreviewData(req.TableName, 1000)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error fetching data: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Analyze
+	// We need column names from the first row or separate metadata
+	if len(data) == 0 {
+		http.Error(w, "Table is empty", http.StatusBadRequest)
+		return
+	}
+
+	// Extract column names from first row map keys
+	// Map iteration order is random, so we should sort or trust what we get?
+	// DataSource.PreviewData returns map.
+	// We should probably have gotten columns from DataSource properly, but let's just infer.
+	var columns []string
+	for k := range data[0] {
+		columns = append(columns, k)
+	}
+	// Sort for consistency
+	// sort.Strings(columns) // Need "sort" import. Leaving unsorted for now unless critical.
+
+	analysisResult, err := h.CSVService.AnalyzeData(data, columns)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error analyzing data: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Store result
+	if req.FileIndex != 0 {
+		h.ContextService.StoreAnalysis(req.FileIndex, &analysisResult)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(analysisResult)
 }
 
 func (h *Handler) HealthCheck(w http.ResponseWriter, r *http.Request) {

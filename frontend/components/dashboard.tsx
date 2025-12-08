@@ -72,6 +72,22 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
   const [contextWizardOpen, setContextWizardOpen] = useState(false)
   const [hasContext, setHasContext] = useState({ file1: false, file2: false })
 
+  // DB State
+  const [dataSourceMode, setDataSourceMode] = useState<'csv' | 'db'>('csv')
+  const [dbConfig, setDbConfig] = useState({
+    type: 'postgres',
+    host: 'localhost',
+    port: 5432,
+    user: 'postgres',
+    password: '',
+    dbname: 'postgres',
+    sslmode: 'disable'
+  })
+  const [isConnecting, setIsConnecting] = useState(false)
+  const [isConnected, setIsConnected] = useState(false)
+  const [dbTables, setDbTables] = useState<string[]>([])
+  const [analyzingTable, setAnalyzingTable] = useState(false)
+
   // Toast notifications
   const { toasts, showToast, removeToast } = useToast()
 
