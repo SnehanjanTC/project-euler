@@ -1,0 +1,92 @@
+{
+  "buckets": [
+    {
+      "range_min": 0,
+      "range_max": 10,
+      "total_count": 0,
+      "correct_count": 0,
+      "actual_accuracy": 0.05,
+      "calibration_factor": 1
+    },
+    {
+      "range_min": 10,
+      "range_max": 20,
+      "total_count": 1,
+      "correct_count": 0,
+      "actual_accuracy": 0,
+      "calibration_factor": 0
+    },
+    {
+      "range_min": 20,
+      "range_max": 30,
+      "total_count": 0,
+      "correct_count": 0,
+      "actual_accuracy": 0.25,
+      "calibration_factor": 1
+    },
+    {
+      "range_min": 30,
+      "range_max": 40,
+      "total_count": 0,
+      "correct_count": 0,
+      "actual_accuracy": 0.35,
+      "calibration_factor": 1
+    },
+    {
+      "range_min": 40,
+      "range_max": 50,
+      "total_count": 0,
+      "correct_count": 0,
+      "actual_accuracy": 0.45,
+      "calibration_factor": 1
+    },
+    {
+      "range_min": 50,
+      "range_max": 60,
+      "total_count": 0,
+      "correct_count": 0,
+      "actual_accuracy": 0.55,
+      "calibration_factor": 1
+    },
+    {
+      "range_min": 60,
+      "range_max": 70,
+      "total_count": 0,
+      "correct_count": 0,
+      "actual_accuracy": 0.65,
+      "calibration_factor": 1
+    },
+    {
+      "range_min": 70,
+      "range_max": 80,
+      "total_count": 0,
+      "correct_count": 0,
+      "actual_accuracy": 0.75,
+      "calibration_factor": 1
+    },
+    {
+      "range_min": 80,
+      "range_max": 90,
+      "total_count": 0,
+      "correct_count": 0,
+      "actual_accuracy": 0.85,
+      "calibration_factor": 1
+    },
+    {
+      "range_min": 90,
+      "range_max": 100,
+      "total_count": 0,
+      "correct_count": 0,
+      "actual_accuracy": 0.95,
+      "calibration_factor": 1
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2025-12-05T22:04:28.8587316+05:30",
+      "predicted_confidence": 11.666666666666666,
+      "actual_correct": false,
+      "calibrated_confidence": 11.666666666666666
+    }
+  ]
+}

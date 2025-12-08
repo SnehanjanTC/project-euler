@@ -1,0 +1,55 @@
+{
+  "matches": [
+    {
+      "file1_column": "annual_salary",
+      "file2_column": "full_name",
+      "is_correct": false,
+      "timestamp": "2025-12-05T21:49:13.1650328+05:30",
+      "name_similarity": 0.3076923076923077,
+      "data_similarity": 0,
+      "pattern_score": 0,
+      "confidence": 12.307692307692308
+    },
+    {
+      "file1_column": "annual_salary",
+      "file2_column": "full_name",
+      "is_correct": false,
+      "timestamp": "2025-12-05T21:49:19.0573491+05:30",
+      "name_similarity": 0.3076923076923077,
+      "data_similarity": 0,
+      "pattern_score": 0,
+      "confidence": 12.307692307692308
+    },
+    {
+      "file1_column": "annual_salary",
+      "file2_column": "full_name",
+      "is_correct": false,
+      "timestamp": "2025-12-05T21:49:25.4336223+05:30",
+      "name_similarity": 0.3076923076923077,
+      "data_similarity": 0,
+      "pattern_score": 0,
+      "confidence": 12.307692307692308
+    },
+    {
+      "file1_column": "bonus_target",
+      "file2_column": "join_date",
+      "is_correct": false,
+      "timestamp": "2025-12-05T21:49:32.3066073+05:30",
+      "name_similarity": 0.33333333333333337,
+      "data_similarity": 0,
+      "pattern_score": 0,
+      "confidence": 13.333333333333336
+    },
+    {
+      "file1_column": "name",
+      "file2_column": "join_date",
+      "is_correct": false,
+      "timestamp": "2025-12-05T22:04:28.8582232+05:30",
+      "name_similarity": 0.33333333333333337,
+      "data_similarity": 0,
+      "pattern_score": 0,
+      "confidence": 11.666666666666666
+    }
+  ],
+  "corrections": {}
+}

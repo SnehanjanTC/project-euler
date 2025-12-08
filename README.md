@@ -75,21 +75,37 @@ Project Euler helps you automatically discover relationships between columns in 
 │  • Visualization        │
 └──────────┬──────────────┘
            │
-           │ REST API
+           │ REST API (Port 8001)
            ▼
-┌─────────────────────────┐
-│   FastAPI Backend       │
-│       (Python)          │
-│                         │
-│  • Context Service      │
-│  • Question Generator   │
-│  • Similarity Engine    │
-│  • Rate Limiting        │
-└──────────┬──────────────┘
-           │
-           ├──► Ollama (Local LLM)
-           └──► OpenAI/Anthropic (Optional)
+┌──────────────────────────────────────────────┐
+│        Backend (Choose One)                  │
+├──────────────────┬───────────────────────────┤
+│  Python (FastAPI)│      Go (Chi Router)      │
+│                  │                           │
+│ • Context Service│  • Context Service        │
+│ • Question Gen   │  • Question Generator     │
+│ • ML Matcher     │  • AI Semantic Matcher    │
+│ • Rate Limiting  │  • Adaptive Learning      │
+│ • Pandas Analysis│  • Pattern Learning       │
+│                  │  • Confidence Calibration │
+└────────┬─────────┴──────────┬────────────────┘
+         │                    │
+         └────────┬───────────┘
+                  │
+                  ├──► Ollama (Local LLM)
+                  └──► OpenAI/Anthropic (Optional)
 ```
+
+### Backend Options
+
+| Feature | Python (FastAPI) | Go (Chi) |
+|---------|------------------|----------|
+| **CSV Parsing** | Pandas | Native Go |
+| **ML Matching** | Sentence Transformers | Heuristic + LLM |
+| **Learning** | Basic | Adaptive Weights, Pattern Learning |
+| **Performance** | Good | Excellent |
+| **Memory** | Higher | Lower |
+
 
 ---
 
@@ -113,7 +129,7 @@ ollama pull llama3
 ollama pull mistral
 ```
 
-### 2. Backend Setup
+### 2a. Backend Setup (Python)
 
 ```bash
 cd backend
@@ -139,6 +155,35 @@ python main.py
 
 Backend runs on **`http://localhost:8001`**
 
+### 2b. Backend Setup (Go - Alternative)
+
+> **Go Backend Features**: Adaptive weight learning, pattern learning, confidence calibration, AI semantic matching via Ollama.
+
+```bash
+cd backend-go
+
+# Build
+go build ./cmd/server/main.go
+
+# Run
+go run ./cmd/server/main.go
+# or
+./main.exe  # Windows
+./main      # Linux/macOS
+```
+
+Backend runs on **`http://localhost:8001`**
+
+**Go Backend Endpoints:**
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/upload` | POST | Upload CSV files |
+| `/column-similarity` | GET | Get column matches (add `?use_ai=true` for LLM) |
+| `/correlation` | GET | Get numeric correlations |
+| `/feedback/match` | POST | Submit match feedback (👍/👎) |
+| `/feedback/stats` | GET | Get learning statistics |
+| `/config/ollama` | GET/POST | Configure Ollama |
+
 ### 3. Frontend Setup
 
 ```bash
@@ -155,6 +200,7 @@ npm run dev
 ```
 
 Frontend runs on **`http://localhost:3000`**
+
 
 ### 4. Open Browser
 
@@ -258,43 +304,50 @@ Changes take effect immediately without restarting the backend.
 ## 📦 Project Structure
 
 ```
-data_reader/
-├── backend/
+project_euler/
+├── backend/                        # Python Backend (FastAPI)
 │   ├── app/
-│   │   ├── routers/
-│   │   │   └── api.py              # API endpoints
+│   │   ├── routers/api.py          # API endpoints
 │   │   ├── services/
 │   │   │   ├── context_service.py  # Context management
-│   │   │   ├── question_generator.py  # AI question generation
-│   │   │   ├── similarity.py       # Correlation algorithm
-│   │   │   └── llm.py              # LLM integration
+│   │   │   ├── question_generator.py
+│   │   │   ├── similarity.py
+│   │   │   └── llm.py
 │   │   ├── utils/
-│   │   │   ├── rate_limit.py       # Rate limiting
-│   │   │   └── security.py         # Input sanitization
-│   │   ├── config.py               # Configuration
-│   │   └── state.py                # Global state
-│   ├── main.py                     # FastAPI app entry point
-│   ├── requirements.txt
-│   ├── .env.template
-│   └── .env.production.example
-├── frontend/
+│   │   └── config.py
+│   ├── main.py
+│   └── requirements.txt
+│
+├── backend-go/                     # Go Backend (Chi Router)
+│   ├── cmd/server/main.go          # Entry point
+│   ├── internal/
+│   │   ├── api/handlers.go         # HTTP handlers
+│   │   ├── service/
+│   │   │   ├── context.go          # Context management
+│   │   │   ├── enhanced_similarity.go  # Column matching
+│   │   │   ├── ai_matcher.go       # LLM-powered matching
+│   │   │   ├── adaptive_learning.go    # Weight learning
+│   │   │   ├── confidence_calibration.go
+│   │   │   ├── pattern_learning.go
+│   │   │   └── feedback_learning.go
+│   │   ├── llm/service.go          # Ollama integration
+│   │   └── state/state.go          # Global state
+│   └── go.mod
+│
+├── frontend/                       # Next.js Frontend
 │   ├── app/
-│   │   ├── layout.tsx              # Root layout
-│   │   └── page.tsx                # Home page
 │   ├── components/
-│   │   ├── dashboard.tsx           # Main dashboard
-│   │   ├── context-wizard.tsx      # Context collection wizard
-│   │   ├── ai-provider-modal.tsx   # API key manager
-│   │   └── ui/                     # Shadcn UI components
+│   │   ├── dashboard.tsx
+│   │   ├── context-wizard.tsx
+│   │   └── ui/
 │   ├── lib/
-│   │   ├── api-config.ts           # Centralized API URLs
-│   │   └── crypto.ts               # Encryption utilities
-│   ├── next.config.js              # Next.js config + security headers
-│   ├── package.json
-│   └── .env.local.example
-├── .gitignore
+│   │   ├── api-config.ts
+│   │   └── crypto.ts
+│   └── package.json
+│
 └── README.md
 ```
+
 
 
 ## 🤝 Contributing
