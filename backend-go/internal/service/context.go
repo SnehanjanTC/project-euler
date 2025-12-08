@@ -8,8 +8,10 @@ import (
 )
 
 type ContextService struct {
-	File1Context *models.Context
-	File2Context *models.Context
+	File1Context  *models.Context
+	File2Context  *models.Context
+	File1Analysis *models.DataAnalysisResult
+	File2Analysis *models.DataAnalysisResult
 }
 
 func NewContextService() *ContextService {
@@ -120,7 +122,7 @@ func (s *ContextService) GetContext(fileIndex int) *models.Context {
 	return nil
 }
 
-// func uniqueStrings helper
+// uniqueStrings helper
 func uniqueStrings(input []string) []string {
 	keys := make(map[string]bool)
 	list := []string{}
@@ -131,4 +133,26 @@ func uniqueStrings(input []string) []string {
 		}
 	}
 	return list
+}
+
+// StoreAnalysis updates the in-memory analysis state
+func (s *ContextService) StoreAnalysis(fileIndex int, analysis *models.DataAnalysisResult) error {
+	if fileIndex == 1 {
+		s.File1Analysis = analysis
+	} else if fileIndex == 2 {
+		s.File2Analysis = analysis
+	} else {
+		return fmt.Errorf("invalid file_index: must be 1 or 2")
+	}
+	return nil
+}
+
+// GetAnalysis retrieves analysis
+func (s *ContextService) GetAnalysis(fileIndex int) *models.DataAnalysisResult {
+	if fileIndex == 1 {
+		return s.File1Analysis
+	} else if fileIndex == 2 {
+		return s.File2Analysis
+	}
+	return nil
 }

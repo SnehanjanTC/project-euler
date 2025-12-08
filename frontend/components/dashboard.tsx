@@ -331,6 +331,8 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
                   setBothFilesLoaded(data.file1_loaded && data.file2_loaded)
                   if (data.file1_loaded && data.file2_loaded) {
                     fetchSimilarityGraph()
+                  } else {
+                    showToast('error', 'Session expired or files missing. Please re-upload both files.')
                   }
                 }
               }}

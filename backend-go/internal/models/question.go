@@ -24,14 +24,14 @@ type Question struct {
 
 // DataAnalysisResult holds analysis of a dataframe for question generation
 type DataAnalysisResult struct {
-	NumRows          int
-	NumColumns       int
-	ColumnNames      []string
-	ColumnTypes      map[string]string
-	HasDates         bool
-	HasNumeric       bool
-	HasText          bool
-	PotentialIDs     []string
-	PotentialDates   []string
-	PotentialAmounts []string
+	NumRows          int               `json:"rows"`
+	NumColumns       int               `json:"columns"`
+	ColumnNames      []string          `json:"column_names"`
+	ColumnTypes      map[string]string `json:"column_types"`
+	HasDates         bool              `json:"has_dates"`
+	HasNumeric       bool              `json:"has_numeric"`
+	HasText          bool              `json:"has_text"`
+	PotentialIDs     []string          `json:"potential_ids"`
+	PotentialDates   []string          `json:"potential_dates"`
+	PotentialAmounts []string          `json:"potential_amounts"`
 }
