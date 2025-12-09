@@ -52,6 +52,53 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+          light: "hsl(var(--success-light))",
+          border: "hsl(var(--success-border))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+          light: "hsl(var(--info-light))",
+          border: "hsl(var(--info-border))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+          light: "hsl(var(--warning-light))",
+          border: "hsl(var(--warning-border))",
+        },
+        error: {
+          DEFAULT: "hsl(var(--error))",
+          foreground: "hsl(var(--error-foreground))",
+          light: "hsl(var(--error-light))",
+          border: "hsl(var(--error-border))",
+        },
+        file1: {
+          DEFAULT: "hsl(var(--file1))",
+          light: "hsl(var(--file1-light))",
+          border: "hsl(var(--file1-border))",
+        },
+        file2: {
+          DEFAULT: "hsl(var(--file2))",
+          light: "hsl(var(--file2-light))",
+          border: "hsl(var(--file2-border))",
+        },
+        confidence: {
+          high: "hsl(var(--confidence-high))",
+          medium: "hsl(var(--confidence-medium))",
+          low: "hsl(var(--confidence-low))",
+        },
+        chart: {
+          green: "hsl(var(--chart-green))",
+          yellow: "hsl(var(--chart-yellow))",
+          orange: "hsl(var(--chart-orange))",
+          red: "hsl(var(--chart-red))",
+          blue: "hsl(var(--chart-blue))",
+          gray: "hsl(var(--chart-gray))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -219,9 +219,9 @@ export default function ContextWizard({ isOpen, onClose, onComplete }: ContextWi
 
             case 'multi_select':
                 return (
-                    <div className="space-y-2 max-h-48 overflow-y-auto border rounded p-3 bg-white">
+                    <div className="space-y-2 max-h-48 overflow-y-auto border border-border rounded p-3 bg-card">
                         {question.options.map((option) => (
-                            <label key={option} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                            <label key={option} className="flex items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded">
                                 <input
                                     type="checkbox"
                                     checked={(answers[question.id] || []).includes(option)}
@@ -245,7 +245,7 @@ export default function ContextWizard({ isOpen, onClose, onComplete }: ContextWi
                     <div className="space-y-3">
                         {question.metadata?.columns?.map((col) => (
                             <div key={col} className="flex items-center gap-3">
-                                <span className="text-sm font-medium min-w-[150px] text-gray-700">{col}:</span>
+                                <span className="text-sm font-medium min-w-[150px] text-foreground">{col}:</span>
                                 <Input
                                     type="text"
                                     placeholder={`Describe ${col}...`}
@@ -267,7 +267,7 @@ export default function ContextWizard({ isOpen, onClose, onComplete }: ContextWi
                         <select
                             value={answers[question.id] || ''}
                             onChange={(e) => handleAnswer(question.id, e.target.value)}
-                            className="w-full border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            className="w-full border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
                         >
                             <option value="">Select an option...</option>
                             {question.options.map((option) => (
@@ -293,26 +293,26 @@ export default function ContextWizard({ isOpen, onClose, onComplete }: ContextWi
         return (
             <div className="space-y-6">
                 <div>
-                    <h3 className="font-semibold text-lg mb-3 text-gray-900">File 1 Context</h3>
-                    <div className="bg-gray-50 rounded-lg p-5 space-y-2.5 text-sm border">
-                        <div><span className="font-medium text-gray-700">Purpose:</span> <span className="text-gray-900">{answers['f1_purpose'] || 'Not provided'}</span></div>
-                        <div><span className="font-medium text-gray-700">Domain:</span> <span className="text-gray-900">{answers['f1_domain'] || 'Not provided'}</span></div>
-                        <div><span className="font-medium text-gray-700">Entities:</span> <span className="text-gray-900">{answers['f1_entities'] || 'Not provided'}</span></div>
+                    <h3 className="font-semibold text-lg mb-3 text-foreground">File 1 Context</h3>
+                    <div className="bg-muted rounded-lg p-5 space-y-2.5 text-sm border border-border">
+                        <div><span className="font-medium text-foreground">Purpose:</span> <span className="text-foreground">{answers['f1_purpose'] || 'Not provided'}</span></div>
+                        <div><span className="font-medium text-foreground">Domain:</span> <span className="text-foreground">{answers['f1_domain'] || 'Not provided'}</span></div>
+                        <div><span className="font-medium text-foreground">Entities:</span> <span className="text-foreground">{answers['f1_entities'] || 'Not provided'}</span></div>
                     </div>
                 </div>
 
                 <div>
-                    <h3 className="font-semibold text-lg mb-3 text-gray-900">File 2 Context</h3>
-                    <div className="bg-gray-50 rounded-lg p-5 space-y-2.5 text-sm border">
-                        <div><span className="font-medium text-gray-700">Purpose:</span> <span className="text-gray-900">{answers['f2_purpose'] || 'Not provided'}</span></div>
-                        <div><span className="font-medium text-gray-700">Domain:</span> <span className="text-gray-900">{answers['f2_domain'] || 'Not provided'}</span></div>
-                        <div><span className="font-medium text-gray-700">Entities:</span> <span className="text-gray-900">{answers['f2_entities'] || 'Not provided'}</span></div>
+                    <h3 className="font-semibold text-lg mb-3 text-foreground">File 2 Context</h3>
+                    <div className="bg-muted rounded-lg p-5 space-y-2.5 text-sm border border-border">
+                        <div><span className="font-medium text-foreground">Purpose:</span> <span className="text-foreground">{answers['f2_purpose'] || 'Not provided'}</span></div>
+                        <div><span className="font-medium text-foreground">Domain:</span> <span className="text-foreground">{answers['f2_domain'] || 'Not provided'}</span></div>
+                        <div><span className="font-medium text-foreground">Entities:</span> <span className="text-foreground">{answers['f2_entities'] || 'Not provided'}</span></div>
                     </div>
                 </div>
 
                 <div>
-                    <h3 className="font-semibold text-lg mb-3 text-gray-900">Relationship</h3>
-                    <div className="bg-gray-50 rounded-lg p-5 text-sm border text-gray-900">
+                    <h3 className="font-semibold text-lg mb-3 text-foreground">Relationship</h3>
+                    <div className="bg-muted rounded-lg p-5 text-sm border border-border text-foreground">
                         {answers['relationship_type'] || 'Not provided'}
                     </div>
                 </div>
@@ -333,20 +333,20 @@ export default function ContextWizard({ isOpen, onClose, onComplete }: ContextWi
 
 
     return createPortal(
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4" style={{ minHeight: '100vh', minWidth: '100vw', top: 0, left: 0, right: 0, bottom: 0 }}>
-            <Card className="w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl bg-white">
-                <CardHeader className="border-b px-6 py-4 bg-white">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4" style={{ minHeight: '100vh', minWidth: '100vw', top: 0, left: 0, right: 0, bottom: 0 }}>
+            <Card className="w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl bg-card">
+                <CardHeader className="border-b border-border px-6 py-4 bg-card">
                     <div className="flex items-center justify-between">
                         <div>
                             <CardTitle className="flex items-center gap-2 text-xl">
-                                <Sparkles className="h-6 w-6 text-blue-600" />
+                                <Sparkles className="h-6 w-6 text-info" />
                                 Data Context Collection
                             </CardTitle>
                             <CardDescription className="mt-1.5 text-sm">
                                 Help us understand your data for better correlation analysis
                             </CardDescription>
                         </div>
-                        <Button variant="ghost" size="sm" onClick={onClose} className="hover:bg-gray-100">
+                        <Button variant="ghost" size="sm" onClick={onClose} className="hover:bg-accent">
                             <X className="h-5 w-5" />
                         </Button>
                     </div>
@@ -355,32 +355,32 @@ export default function ContextWizard({ isOpen, onClose, onComplete }: ContextWi
                 {/* Two-panel layout */}
                 <div className="flex-1 flex overflow-hidden">
                     {/* Left Panel - Vertical Stepper */}
-                    <div className="w-72 border-r bg-gradient-to-b from-gray-50 to-white p-6 flex flex-col">
+                    <div className="w-72 border-r border-border bg-gradient-to-b from-muted to-card p-6 flex flex-col">
                         <div className="space-y-2 flex-1">
                             {steps.map((step, index) => (
                                 <div
                                     key={index}
                                     className={`flex items-start gap-3 p-4 rounded-lg transition-all duration-200 ${index === currentStep
-                                        ? 'bg-blue-50 border-l-4 border-blue-600 shadow-sm'
+                                        ? 'bg-info-light border-l-4 border-info shadow-sm'
                                         : index < currentStep
-                                            ? 'bg-white border border-gray-200'
+                                            ? 'bg-card border border-border'
                                             : 'opacity-50'
                                         }`}
                                 >
                                     <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 transition-colors ${index < currentStep
-                                        ? 'bg-green-500 text-white shadow-md'
+                                        ? 'bg-success text-success-foreground shadow-md'
                                         : index === currentStep
-                                            ? 'bg-blue-600 text-white shadow-md'
-                                            : 'bg-gray-200 text-gray-600'
+                                            ? 'bg-info text-info-foreground shadow-md'
+                                            : 'bg-muted text-muted-foreground'
                                         }`}>
                                         {index < currentStep ? <Check className="h-5 w-5" /> : index + 1}
                                     </div>
                                     <div className="flex-1 min-w-0 pt-0.5">
-                                        <div className={`text-sm font-semibold ${index === currentStep ? 'text-blue-900' : 'text-gray-700'
+                                        <div className={`text-sm font-semibold ${index === currentStep ? 'text-info' : 'text-foreground'
                                             }`}>
                                             {step.title}
                                         </div>
-                                        <div className="text-xs text-gray-500 mt-1 leading-relaxed">
+                                        <div className="text-xs text-muted-foreground mt-1 leading-relaxed">
                                             {step.description}
                                         </div>
                                     </div>
@@ -389,28 +389,28 @@ export default function ContextWizard({ isOpen, onClose, onComplete }: ContextWi
                         </div>
 
                         {/* Progress indicator */}
-                        <div className="mt-6 pt-6 border-t border-gray-200">
-                            <div className="text-xs font-medium text-gray-600 mb-2">Overall Progress</div>
-                            <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                        <div className="mt-6 pt-6 border-t border-border">
+                            <div className="text-xs font-medium text-muted-foreground mb-2">Overall Progress</div>
+                            <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
                                 <div
-                                    className="bg-blue-600 h-2.5 rounded-full transition-all duration-500 ease-out"
+                                    className="bg-info h-2.5 rounded-full transition-all duration-500 ease-out"
                                     style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
                                 />
                             </div>
-                            <div className="text-xs text-gray-500 mt-2 font-medium">
+                            <div className="text-xs text-muted-foreground mt-2 font-medium">
                                 Step {currentStep + 1} of {steps.length}
                             </div>
                         </div>
                     </div>
 
                     {/* Right Panel - Content */}
-                    <div className="flex-1 flex flex-col overflow-hidden bg-white">
+                    <div className="flex-1 flex flex-col overflow-hidden bg-card">
                         <CardContent className="flex-1 overflow-y-auto p-8">
                             {loading ? (
                                 <div className="flex items-center justify-center py-20">
                                     <div className="text-center">
-                                        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-6"></div>
-                                        <p className="text-gray-600 font-medium">Generating questions...</p>
+                                        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-info mx-auto mb-6"></div>
+                                        <p className="text-muted-foreground font-medium">Generating questions...</p>
                                     </div>
                                 </div>
                             ) : currentStep === steps.length - 1 ? (
@@ -418,19 +418,19 @@ export default function ContextWizard({ isOpen, onClose, onComplete }: ContextWi
                             ) : (
                                 <div className="space-y-6 max-w-4xl mx-auto">
                                     <div className="mb-8">
-                                        <h3 className="text-2xl font-bold text-gray-900">{steps[currentStep].title}</h3>
-                                        <p className="text-sm text-gray-600 mt-2">{steps[currentStep].description}</p>
+                                        <h3 className="text-2xl font-bold text-foreground">{steps[currentStep].title}</h3>
+                                        <p className="text-sm text-muted-foreground mt-2">{steps[currentStep].description}</p>
                                     </div>
 
                                     {getCurrentQuestions().map((question, idx) => (
-                                        <div key={question.id} className="space-y-3 bg-gray-50 p-5 rounded-lg border border-gray-200">
-                                            <label className="block text-sm font-semibold text-gray-900">
-                                                <span className="text-gray-500 mr-2">{idx + 1}.</span>
+                                        <div key={question.id} className="space-y-3 bg-muted p-5 rounded-lg border border-border">
+                                            <label className="block text-sm font-semibold text-foreground">
+                                                <span className="text-muted-foreground mr-2">{idx + 1}.</span>
                                                 {question.text}
-                                                {question.required && <span className="text-red-500 ml-1.5">*</span>}
+                                                {question.required && <span className="text-error ml-1.5">*</span>}
                                             </label>
                                             {question.metadata?.hint && (
-                                                <p className="text-xs text-gray-500 italic">{question.metadata.hint}</p>
+                                                <p className="text-xs text-muted-foreground italic">{question.metadata.hint}</p>
                                             )}
                                             <div className="mt-2">
                                                 {renderQuestion(question)}
@@ -442,7 +442,7 @@ export default function ContextWizard({ isOpen, onClose, onComplete }: ContextWi
                         </CardContent>
 
                         {/* Footer with navigation buttons */}
-                        <div className="border-t p-6 flex items-center justify-between bg-gray-50">
+                        <div className="border-t border-border p-6 flex items-center justify-between bg-muted">
                             <Button
                                 variant="outline"
                                 onClick={handleBack}
@@ -457,7 +457,7 @@ export default function ContextWizard({ isOpen, onClose, onComplete }: ContextWi
                                 <Button
                                     onClick={handleSubmit}
                                     disabled={submitting}
-                                    className="bg-green-600 hover:bg-green-700 px-8 text-base font-medium"
+                                    className="bg-success hover:bg-success/90 text-success-foreground px-8 text-base font-medium"
                                     size="lg"
                                 >
                                     {submitting ? 'Submitting...' : 'Complete & Generate Correlation'}
@@ -467,7 +467,7 @@ export default function ContextWizard({ isOpen, onClose, onComplete }: ContextWi
                                 <Button
                                     onClick={handleNext}
                                     disabled={!canProceed()}
-                                    className="bg-blue-600 hover:bg-blue-700 px-8 text-base font-medium"
+                                    className="bg-info hover:bg-info/90 text-info-foreground px-8 text-base font-medium"
                                     size="lg"
                                 >
                                     Next Step

@@ -106,23 +106,23 @@ export default function AIProviderModal({ isOpen, onClose }: AIProviderModalProp
     if (!isOpen) return null
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
+            <div className="bg-card rounded-xl shadow-2xl w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
-                <div className="flex items-start justify-between px-8 py-6 border-b border-gray-200">
+                <div className="flex items-start justify-between px-8 py-6 border-b border-border">
                     <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                            <h3 className="text-xl font-semibold text-gray-900">API Keys</h3>
-                            <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded">BYOK</span>
+                            <h3 className="text-xl font-semibold text-foreground">API Keys</h3>
+                            <span className="px-2 py-0.5 bg-success-light text-success text-xs font-medium rounded">BYOK</span>
                         </div>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-muted-foreground">
                             By default, your API Key is stored locally on your browser and never sent anywhere else.
                         </p>
                     </div>
 
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600 text-2xl leading-none ml-4"
+                        className="text-muted-foreground hover:text-foreground text-2xl leading-none ml-4"
                     >
                         ×
                     </button>
@@ -134,14 +134,14 @@ export default function AIProviderModal({ isOpen, onClose }: AIProviderModalProp
                         {AI_PROVIDERS.map((provider) => (
                             <div key={provider.id}>
                                 <div className="flex items-center justify-between mb-3">
-                                    <label className="text-sm font-medium text-gray-900">
+                                    <label className="text-sm font-medium text-foreground">
                                         {provider.name} API Key:
                                     </label>
                                     <a
                                         href={provider.docLink}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-sm text-blue-600 hover:underline"
+                                        className="text-sm text-info hover:underline"
                                     >
                                         (Get API key here)
                                     </a>
@@ -155,15 +155,15 @@ export default function AIProviderModal({ isOpen, onClose }: AIProviderModalProp
                                             setApiKeys({ ...apiKeys, [provider.id]: e.target.value })
                                         }
                                         placeholder={provider.placeholder}
-                                        className="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="flex-1 px-4 py-3 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
                                     />
 
                                     <button
                                         onClick={() => handleAddKey(provider.id)}
                                         disabled={!apiKeys[provider.id]}
                                         className={`px-6 py-3 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${apiKeys[provider.id]
-                                            ? 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
-                                            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                            ? 'bg-card border border-border text-foreground hover:bg-accent'
+                                            : 'bg-muted text-muted-foreground cursor-not-allowed'
                                             }`}
                                     >
                                         {apiKeys[provider.id] ? 'Change Key' : 'Add Key'}
@@ -173,24 +173,24 @@ export default function AIProviderModal({ isOpen, onClose }: AIProviderModalProp
                         ))}
 
                         {/* Ollama Local Configuration */}
-                        <div className="mt-8 pt-8 border-t border-gray-200">
+                        <div className="mt-8 pt-8 border-t border-border">
                             <div className="flex items-center gap-2 mb-6">
-                                <h4 className="text-lg font-semibold text-gray-900">Ollama Local</h4>
-                                <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-medium rounded">LOCAL</span>
+                                <h4 className="text-lg font-semibold text-foreground">Ollama Local</h4>
+                                <span className="px-2 py-0.5 bg-accent text-accent-foreground text-xs font-medium rounded">LOCAL</span>
                             </div>
 
                             <div className="space-y-6">
                                 {/* Base URL */}
                                 <div>
                                     <div className="flex items-center justify-between mb-3">
-                                        <label className="text-sm font-medium text-gray-900">
+                                        <label className="text-sm font-medium text-foreground">
                                             Ollama Base URL:
                                         </label>
                                         <a
                                             href="https://ollama.ai/download"
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-sm text-blue-600 hover:underline"
+                                            className="text-sm text-info hover:underline"
                                         >
                                             (Download Ollama)
                                         </a>
@@ -203,21 +203,21 @@ export default function AIProviderModal({ isOpen, onClose }: AIProviderModalProp
                                             setOllamaConfig({ ...ollamaConfig, baseUrl: e.target.value })
                                         }
                                         placeholder="http://localhost:11434"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                        className="w-full px-4 py-3 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
                                     />
                                 </div>
 
                                 {/* Model Name */}
                                 <div>
                                     <div className="flex items-center justify-between mb-3">
-                                        <label className="text-sm font-medium text-gray-900">
+                                        <label className="text-sm font-medium text-foreground">
                                             Model Name:
                                         </label>
                                         <a
                                             href="https://ollama.ai/library"
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-sm text-blue-600 hover:underline"
+                                            className="text-sm text-info hover:underline"
                                         >
                                             (Browse models)
                                         </a>
@@ -230,7 +230,7 @@ export default function AIProviderModal({ isOpen, onClose }: AIProviderModalProp
                                             setOllamaConfig({ ...ollamaConfig, model: e.target.value })
                                         }
                                         placeholder="e.g., llama3, qwen3-vl:2b, mistral"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                        className="w-full px-4 py-3 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
                                     />
                                 </div>
 
@@ -238,7 +238,7 @@ export default function AIProviderModal({ isOpen, onClose }: AIProviderModalProp
                                 <div className="flex justify-end">
                                     <button
                                         onClick={handleSaveOllama}
-                                        className="px-6 py-3 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
+                                        className="px-6 py-3 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
                                     >
                                         Save Ollama Config
                                     </button>

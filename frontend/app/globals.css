@@ -24,6 +24,45 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
+    
+    /* Semantic colors */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 142 76% 95%;
+    --success-border: 142 76% 85%;
+    --info: 217 91% 60%;
+    --info-foreground: 0 0% 100%;
+    --info-light: 217 91% 95%;
+    --info-border: 217 91% 85%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --warning-light: 38 92% 95%;
+    --warning-border: 38 92% 85%;
+    --error: 0 84% 60%;
+    --error-foreground: 0 0% 100%;
+    --error-light: 0 84% 95%;
+    --error-border: 0 84% 85%;
+    
+    /* File indicator colors */
+    --file1: 142 76% 36%;
+    --file1-light: 142 76% 95%;
+    --file1-border: 142 76% 85%;
+    --file2: 217 91% 60%;
+    --file2-light: 217 91% 95%;
+    --file2-border: 217 91% 85%;
+    
+    /* Confidence level colors */
+    --confidence-high: 142 76% 36%;
+    --confidence-medium: 38 92% 50%;
+    --confidence-low: 0 84% 60%;
+    
+    /* Chart/Graph colors */
+    --chart-green: 142 76% 36%;
+    --chart-yellow: 38 92% 50%;
+    --chart-orange: 25 95% 53%;
+    --chart-red: 0 84% 60%;
+    --chart-blue: 217 91% 60%;
+    --chart-gray: 215 16% 47%;
   }
 
   .dark {
@@ -46,6 +85,45 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+    
+    /* Semantic colors - adjusted for dark mode */
+    --success: 142 70% 45%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 142 30% 20%;
+    --success-border: 142 50% 35%;
+    --info: 217 80% 55%;
+    --info-foreground: 0 0% 100%;
+    --info-light: 217 30% 20%;
+    --info-border: 217 50% 40%;
+    --warning: 38 85% 55%;
+    --warning-foreground: 0 0% 100%;
+    --warning-light: 38 30% 20%;
+    --warning-border: 38 50% 40%;
+    --error: 0 72% 55%;
+    --error-foreground: 0 0% 100%;
+    --error-light: 0 30% 20%;
+    --error-border: 0 50% 40%;
+    
+    /* File indicator colors - adjusted for dark mode */
+    --file1: 142 70% 45%;
+    --file1-light: 142 30% 20%;
+    --file1-border: 142 50% 35%;
+    --file2: 217 80% 55%;
+    --file2-light: 217 30% 20%;
+    --file2-border: 217 50% 40%;
+    
+    /* Confidence level colors - adjusted for dark mode */
+    --confidence-high: 142 70% 45%;
+    --confidence-medium: 38 85% 55%;
+    --confidence-low: 0 72% 55%;
+    
+    /* Chart/Graph colors - adjusted for dark mode */
+    --chart-green: 142 70% 45%;
+    --chart-yellow: 38 85% 55%;
+    --chart-orange: 25 90% 58%;
+    --chart-red: 0 72% 55%;
+    --chart-blue: 217 80% 55%;
+    --chart-gray: 215 20% 65%;
   }
 }
 

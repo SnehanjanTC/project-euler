@@ -357,16 +357,16 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
 
   if (!csvLoaded) {
     return (
-      <div className="h-full flex items-center justify-center text-gray-600">
+      <div className="h-full flex items-center justify-center text-muted-foreground">
         <div className="text-center max-w-md">
-          <Sparkles className="h-16 w-16 mx-auto mb-4 opacity-50 text-black" />
-          <h3 className="text-lg font-semibold text-black mb-2">No Data Loaded</h3>
+          <Sparkles className="h-16 w-16 mx-auto mb-4 opacity-50 text-foreground" />
+          <h3 className="text-lg font-semibold text-foreground mb-2">No Data Loaded</h3>
           <p className="text-sm mb-6">Upload CSV files from the left panel to begin correlation analysis</p>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-left">
-            <p className="text-xs text-gray-700 mb-2">
+          <div className="bg-info-light border border-info-border rounded-lg p-4 text-left">
+            <p className="text-xs text-foreground mb-2">
               <span className="font-semibold">Quick Start:</span>
             </p>
-            <ol className="text-xs text-gray-600 space-y-1 list-decimal list-inside">
+            <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
               <li>Upload CSV File 1 using the left panel</li>
               <li>Upload CSV File 2 (optional)</li>
               <li>Click "Generate Correlation" to analyze</li>
@@ -380,23 +380,23 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
   // Show Generate Correlation button prominently when only one file is loaded
   if (csvLoaded && !bothFilesLoaded) {
     return (
-      <div className="h-full overflow-y-auto p-4 space-y-4 bg-white">
+      <div className="h-full overflow-y-auto p-4 space-y-4 bg-background">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-base font-medium text-black">Dashboard</h2>
-            <p className="text-xs text-gray-500 mt-0.5">Data analysis and correlation engine</p>
+            <h2 className="text-base font-medium text-foreground">Dashboard</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Data analysis and correlation engine</p>
           </div>
         </div>
 
         <div className="h-full flex items-center justify-center">
           <div className="text-center max-w-md">
-            <Sparkles className="h-16 w-16 mx-auto mb-4 text-blue-500" />
-            <h3 className="text-lg font-semibold text-black mb-2">Ready for Correlation Analysis</h3>
-            <p className="text-sm text-gray-600 mb-6">
+            <Sparkles className="h-16 w-16 mx-auto mb-4 text-info" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">Ready for Correlation Analysis</h3>
+            <p className="text-sm text-muted-foreground mb-6">
               Upload a second CSV file to compare and generate correlation mappings between the two datasets
             </p>
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
-              <p className="text-xs text-gray-700">
+            <div className="bg-warning-light border border-warning-border rounded-lg p-4 mb-6">
+              <p className="text-xs text-foreground">
                 <span className="font-semibold">Note:</span> Correlation analysis requires two CSV files to compare column similarities and data relationships.
               </p>
             </div>
@@ -415,12 +415,12 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
                 }
               }}
               size="lg"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3"
+              className="bg-info hover:bg-info/90 text-info-foreground px-8 py-3"
             >
               <Sparkles className="h-5 w-5 mr-2" />
               Check Files & Generate Correlation
             </Button>
-            <p className="text-xs text-gray-500 mt-4">
+            <p className="text-xs text-muted-foreground mt-4">
               If you've already uploaded 2 files, click the button above to check status and generate correlation
             </p>
           </div>
@@ -430,28 +430,28 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
   }
 
   return (
-    <div className="h-full overflow-y-auto p-4 space-y-4 bg-white">
+    <div className="h-full overflow-y-auto p-4 space-y-4 bg-background">
       {/* Prominent Generate Correlation Section */}
       {bothFilesLoaded && !similarityGraph && (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-6 mb-4">
+        <div className="bg-gradient-to-r from-info-light to-info-light/50 border-2 border-info-border rounded-lg p-6 mb-4">
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="h-5 w-5 text-blue-600" />
-                <h3 className="text-lg font-semibold text-black">Generate Correlation Analysis</h3>
+                <Sparkles className="h-5 w-5 text-info" />
+                <h3 className="text-lg font-semibold text-foreground">Generate Correlation Analysis</h3>
                 {(hasContext.file1 || hasContext.file2) && (
-                  <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
+                  <span className="text-xs bg-success-light text-success px-2 py-1 rounded-full font-medium">
                     Context Available ✓
                   </span>
                 )}
               </div>
-              <p className="text-sm text-gray-700 mb-2">
+              <p className="text-sm text-foreground mb-2">
                 {hasContext.file1 && hasContext.file2
                   ? "Context collected! Click to generate enhanced correlation analysis with improved accuracy."
                   : "Add context about your datasets for better correlation accuracy (recommended)."}
               </p>
               {!hasContext.file1 || !hasContext.file2 ? (
-                <div className="flex items-center gap-2 text-xs text-gray-600 bg-blue-100 p-2 rounded mt-2">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground bg-info-light p-2 rounded mt-2">
                   <Info className="h-4 w-4 flex-shrink-0" />
                   <span>
                     Providing context reduces false positives by 30-50% and helps identify domain-specific relationships.
@@ -463,7 +463,7 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
               <Button
                 onClick={handleGenerateWithContext}
                 size="lg"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 h-auto"
+                className="bg-info hover:bg-info/90 text-info-foreground px-6 py-3 h-auto"
                 disabled={similarityLoading}
               >
                 {similarityLoading ? (
@@ -495,8 +495,8 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
       )}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-base font-medium text-black">Dashboard</h2>
-          <p className="text-xs text-gray-500 mt-0.5">Data analysis and correlation engine</p>
+          <h2 className="text-base font-medium text-foreground">Dashboard</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">Data analysis and correlation engine</p>
         </div>
         <div className="flex items-center gap-2">
           {bothFilesLoaded && (
@@ -505,7 +505,7 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
                 onClick={fetchSimilarityGraph}
                 variant="outline"
                 size="sm"
-                className="border-gray-300 text-black hover:bg-gray-50"
+                className="border-border text-foreground hover:bg-accent"
                 disabled={similarityLoading}
               >
                 {similarityLoading ? (
@@ -526,7 +526,7 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
                     onClick={exportToCSV}
                     variant="outline"
                     size="sm"
-                    className="border-green-300 text-green-700 hover:bg-green-50"
+                    className="border-success-border text-success hover:bg-success-light"
                   >
                     <Download className="h-3.5 w-3.5 mr-1.5" />
                     Export CSV
@@ -535,7 +535,7 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
                     onClick={exportToJSON}
                     variant="outline"
                     size="sm"
-                    className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                    className="border-info-border text-info hover:bg-info-light"
                   >
                     <Download className="h-3.5 w-3.5 mr-1.5" />
                     Export JSON
@@ -551,12 +551,12 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
       <>
         {/* Column Relationship Graph Section */}
         {bothFilesLoaded && (
-          <Card className="border border-gray-300">
+          <Card className="border border-border">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-base font-medium text-black">Column Relationship Graph</CardTitle>
-                  <CardDescription className="mt-0.5 text-xs text-gray-500">
+                  <CardTitle className="text-base font-medium text-foreground">Column Relationship Graph</CardTitle>
+                  <CardDescription className="mt-0.5 text-xs text-muted-foreground">
                     Interactive flow diagram showing related fields between both CSV files with confidence percentages
                   </CardDescription>
                 </div>
@@ -565,7 +565,7 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
                     onClick={fetchSimilarityGraph}
                     variant="outline"
                     size="sm"
-                    className="border-gray-300 text-black hover:bg-gray-50"
+                    className="border-border text-foreground hover:bg-accent"
                     disabled={similarityLoading}
                   >
                     {similarityLoading ? (
@@ -586,49 +586,49 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
             <CardContent>
               {similarityLoading ? (
                 <div className="flex items-center justify-center p-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-black" />
-                  <span className="ml-2 text-sm text-black">Analyzing column relationships...</span>
+                  <Loader2 className="h-6 w-6 animate-spin text-foreground" />
+                  <span className="ml-2 text-sm text-foreground">Analyzing column relationships...</span>
                 </div>
               ) : similarityGraph && similarityGraph.edges && similarityGraph.edges.length > 0 ? (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-600">
-                      Found <span className="font-medium text-black">{similarityGraph.total_relationships || 0}</span> relationship(s) between columns.
+                    <div className="text-sm text-muted-foreground">
+                      Found <span className="font-medium text-foreground">{similarityGraph.total_relationships || 0}</span> relationship(s) between columns.
                     </div>
                     {/* Legend */}
                     <div className="flex items-center gap-4 text-xs flex-wrap">
                       <div className="flex items-center gap-1">
-                        <div className="w-3 h-3 rounded-full bg-green-50 border-2 border-green-300"></div>
-                        <span className="text-gray-600">File 1</span>
+                        <div className="w-3 h-3 rounded-full bg-file1-light border-2 border-file1-border"></div>
+                        <span className="text-muted-foreground">File 1</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <div className="w-3 h-3 rounded-full bg-blue-50 border-2 border-blue-300"></div>
-                        <span className="text-gray-600">File 2</span>
+                        <div className="w-3 h-3 rounded-full bg-file2-light border-2 border-file2-border"></div>
+                        <span className="text-muted-foreground">File 2</span>
                       </div>
-                      <div className="flex items-center gap-2 ml-2 border-l border-gray-300 pl-2">
-                        <span className="text-gray-500 font-medium">Similarity:</span>
+                      <div className="flex items-center gap-2 ml-2 border-l border-border pl-2">
+                        <span className="text-muted-foreground font-medium">Similarity:</span>
                         <div className="flex items-center gap-1">
-                          <div className="w-4 h-0.5 bg-green-500"></div>
-                          <span className="text-gray-600">≥70%</span>
+                          <div className="w-4 h-0.5 bg-confidence-high"></div>
+                          <span className="text-muted-foreground">≥70%</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <div className="w-4 h-0.5 bg-yellow-500"></div>
-                          <span className="text-gray-600">≥50%</span>
+                          <div className="w-4 h-0.5 bg-confidence-medium"></div>
+                          <span className="text-muted-foreground">≥50%</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <div className="w-4 h-0.5 bg-orange-500"></div>
-                          <span className="text-gray-600">≥30%</span>
+                          <div className="w-4 h-0.5 bg-chart-orange"></div>
+                          <span className="text-muted-foreground">≥30%</span>
                         </div>
                       </div>
                       {correlationData && correlationData.correlations.length > 0 && (
-                        <div className="flex items-center gap-2 ml-2 border-l border-gray-300 pl-2">
-                          <span className="text-gray-500 font-medium">Correlation:</span>
+                        <div className="flex items-center gap-2 ml-2 border-l border-border pl-2">
+                          <span className="text-muted-foreground font-medium">Correlation:</span>
                           <div className="flex items-center gap-1">
-                            <div className="w-6 h-0.5 bg-green-600" style={{
-                              backgroundImage: 'repeating-linear-gradient(to right, #16a34a 0px, #16a34a 4px, transparent 4px, transparent 8px)',
+                            <div className="w-6 h-0.5 bg-confidence-high" style={{
+                              backgroundImage: `repeating-linear-gradient(to right, hsl(var(--confidence-high)) 0px, hsl(var(--confidence-high)) 4px, transparent 4px, transparent 8px)`,
                               animation: 'dashdraw 2s linear infinite'
                             }}></div>
-                            <span className="text-gray-600">Dotted Green</span>
+                            <span className="text-muted-foreground">Dotted Green</span>
                           </div>
                         </div>
                       )}
@@ -644,49 +644,49 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
 
                   {/* Relationship Table */}
                   {similarityGraph.similarities && similarityGraph.similarities.length > 0 && (
-                    <div className="border border-gray-300 rounded-md overflow-auto max-h-[400px]">
+                    <div className="border border-border rounded-md overflow-auto max-h-[400px]">
                       <table className="w-full text-sm">
-                        <thead className="bg-gray-50 border-b border-gray-300">
+                        <thead className="bg-muted border-b border-border">
                           <tr>
-                            <th className="px-4 py-2 text-left font-medium text-black border-r border-gray-300">File 1 Column</th>
-                            <th className="px-4 py-2 text-left font-medium text-black border-r border-gray-300">File 2 Column</th>
-                            <th className="px-4 py-2 text-center font-medium text-black border-r border-gray-300">Similarity</th>
-                            <th className="px-4 py-2 text-center font-medium text-black border-r border-gray-300">Confidence</th>
-                            <th className="px-4 py-2 text-center font-medium text-black border-r border-gray-300">Type</th>
-                            <th className="px-4 py-2 text-center font-medium text-black">Feedback</th>
+                            <th className="px-4 py-2 text-left font-medium text-foreground border-r border-border">File 1 Column</th>
+                            <th className="px-4 py-2 text-left font-medium text-foreground border-r border-border">File 2 Column</th>
+                            <th className="px-4 py-2 text-center font-medium text-foreground border-r border-border">Similarity</th>
+                            <th className="px-4 py-2 text-center font-medium text-foreground border-r border-border">Confidence</th>
+                            <th className="px-4 py-2 text-center font-medium text-foreground border-r border-border">Type</th>
+                            <th className="px-4 py-2 text-center font-medium text-foreground">Feedback</th>
                           </tr>
                         </thead>
                         <tbody>
                           {similarityGraph.similarities.map((sim: any, idx: number) => (
-                            <tr key={idx} className="border-b border-gray-200 hover:bg-gray-50">
-                              <td className="px-4 py-2 text-black border-r border-gray-300">{sim.file1_column}</td>
-                              <td className="px-4 py-2 text-black border-r border-gray-300">{sim.file2_column}</td>
-                              <td className="px-4 py-2 text-center text-black border-r border-gray-300">
+                            <tr key={idx} className="border-b border-border hover:bg-accent">
+                              <td className="px-4 py-2 text-foreground border-r border-border">{sim.file1_column}</td>
+                              <td className="px-4 py-2 text-foreground border-r border-border">{sim.file2_column}</td>
+                              <td className="px-4 py-2 text-center text-foreground border-r border-border">
                                 {((sim.similarity || 0) * 100).toFixed(1)}%
                               </td>
-                              <td className="px-4 py-2 text-center border-r border-gray-300">
-                                <span className={`px-2 py-0.5 rounded text-xs font-medium ${(sim.confidence || 0) > 70 ? 'bg-green-100 text-green-700' :
-                                  (sim.confidence || 0) > 50 ? 'bg-yellow-100 text-yellow-700' :
-                                    'bg-red-100 text-red-700'
+                              <td className="px-4 py-2 text-center border-r border-border">
+                                <span className={`px-2 py-0.5 rounded text-xs font-medium ${(sim.confidence || 0) > 70 ? 'bg-success-light text-success' :
+                                  (sim.confidence || 0) > 50 ? 'bg-warning-light text-warning' :
+                                    'bg-error-light text-error'
                                   }`}>
                                   {(sim.confidence || 0).toFixed(1)}%
                                 </span>
                               </td>
-                              <td className="px-4 py-2 text-center text-xs text-gray-600 border-r border-gray-300">
+                              <td className="px-4 py-2 text-center text-xs text-muted-foreground border-r border-border">
                                 {sim.type || 'unknown'}
                               </td>
                               <td className="px-4 py-2">
                                 <div className="flex items-center justify-center gap-2">
                                   <button
                                     onClick={() => handleFeedback(sim.file1_column, sim.file2_column, true, sim)}
-                                    className="p-1 hover:bg-green-100 rounded transition-colors text-lg"
+                                    className="p-1 hover:bg-success-light rounded transition-colors text-lg"
                                     title="This match is correct"
                                   >
                                     👍
                                   </button>
                                   <button
                                     onClick={() => handleFeedback(sim.file1_column, sim.file2_column, false, sim)}
-                                    className="p-1 hover:bg-red-100 rounded transition-colors text-lg"
+                                    className="p-1 hover:bg-error-light rounded transition-colors text-lg"
                                     title="This match is incorrect"
                                   >
                                     👎
@@ -701,15 +701,15 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
                   )}
                 </div>
               ) : similarityGraph && similarityGraph.total_relationships === 0 ? (
-                <div className="text-center py-8 text-gray-500 text-sm">
+                <div className="text-center py-8 text-muted-foreground text-sm">
                   No relationships found with confidence above 10%. Try uploading files with similar column structures.
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <div className="text-gray-500 text-sm mb-3">
+                  <div className="text-muted-foreground text-sm mb-3">
                     Click the "Generate Correlation" button to create an interactive flow diagram showing relationships between columns from both files.
                   </div>
-                  <div className="text-xs text-gray-400">
+                  <div className="text-xs text-muted-foreground/70">
                     The diagram will show nodes (columns) and edges (relationships) with confidence percentages.
                   </div>
                 </div>
@@ -720,12 +720,12 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
 
         {/* Correlation Analysis Section */}
         {bothFilesLoaded && (
-          <Card className="border border-gray-300">
+          <Card className="border border-border">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-base font-medium text-black">Correlation Analysis</CardTitle>
-                  <CardDescription className="mt-0.5 text-xs text-gray-500">
+                  <CardTitle className="text-base font-medium text-foreground">Correlation Analysis</CardTitle>
+                  <CardDescription className="mt-0.5 text-xs text-muted-foreground">
                     Numeric correlations between columns from both CSV files
                   </CardDescription>
                 </div>
@@ -733,7 +733,7 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
                   onClick={fetchCorrelations}
                   variant="outline"
                   size="sm"
-                  className="border-gray-300 text-black hover:bg-gray-50"
+                  className="border-border text-foreground hover:bg-accent"
                   disabled={correlationLoading}
                 >
                   {correlationLoading ? (
@@ -750,25 +750,25 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
             <CardContent>
               {correlationLoading ? (
                 <div className="flex items-center justify-center p-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-black" />
-                  <span className="ml-2 text-sm text-black">Calculating correlations...</span>
+                  <Loader2 className="h-6 w-6 animate-spin text-foreground" />
+                  <span className="ml-2 text-sm text-foreground">Calculating correlations...</span>
                 </div>
               ) : similarityGraph?.correlations && similarityGraph.correlations.length > 0 ? (
                 <div className="space-y-4">
-                  <div className="text-sm text-gray-600 mb-4">
-                    Found <span className="font-medium text-black">{similarityGraph.correlations.length}</span> numeric correlation(s) between matched columns.
+                  <div className="text-sm text-muted-foreground mb-4">
+                    Found <span className="font-medium text-foreground">{similarityGraph.correlations.length}</span> numeric correlation(s) between matched columns.
                   </div>
 
                   {/* Correlation Table with AI Explanations */}
-                  <div className="border border-gray-300 rounded-md overflow-hidden">
+                  <div className="border border-border rounded-md overflow-hidden">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50 border-b border-gray-300">
+                      <thead className="bg-muted border-b border-border">
                         <tr>
-                          <th className="px-4 py-2 text-left font-medium text-black border-r border-gray-300">Columns</th>
-                          <th className="px-4 py-2 text-center font-medium text-black border-r border-gray-300">Pearson</th>
-                          <th className="px-4 py-2 text-center font-medium text-black border-r border-gray-300">Spearman</th>
-                          <th className="px-4 py-2 text-center font-medium text-black border-r border-gray-300">Strength</th>
-                          <th className="px-4 py-2 text-left font-medium text-black">AI Explanation</th>
+                          <th className="px-4 py-2 text-left font-medium text-foreground border-r border-border">Columns</th>
+                          <th className="px-4 py-2 text-center font-medium text-foreground border-r border-border">Pearson</th>
+                          <th className="px-4 py-2 text-center font-medium text-foreground border-r border-border">Spearman</th>
+                          <th className="px-4 py-2 text-center font-medium text-foreground border-r border-border">Strength</th>
+                          <th className="px-4 py-2 text-left font-medium text-foreground">AI Explanation</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -791,34 +791,34 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
                           }
 
                           return (
-                            <tr key={idx} className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
-                              <td className="px-4 py-3 border-r border-gray-300">
-                                <div className="font-medium text-black">{corr.file1_column}</div>
-                                <div className="text-xs text-gray-500">↔ {corr.file2_column}</div>
-                                <div className="text-xs text-gray-400 mt-1">n={corr.sample_size}</div>
+                            <tr key={idx} className="border-b border-border last:border-b-0 hover:bg-accent">
+                              <td className="px-4 py-3 border-r border-border">
+                                <div className="font-medium text-foreground">{corr.file1_column}</div>
+                                <div className="text-xs text-muted-foreground">↔ {corr.file2_column}</div>
+                                <div className="text-xs text-muted-foreground/70 mt-1">n={corr.sample_size}</div>
                               </td>
-                              <td className="px-4 py-3 text-center border-r border-gray-300">
-                                <span className={`font-semibold ${absPearson > 0.7 ? 'text-green-600' :
-                                  absPearson > 0.4 ? 'text-amber-600' :
-                                    'text-gray-600'
+                              <td className="px-4 py-3 text-center border-r border-border">
+                                <span className={`font-semibold ${absPearson > 0.7 ? 'text-confidence-high' :
+                                  absPearson > 0.4 ? 'text-confidence-medium' :
+                                    'text-muted-foreground'
                                   }`}>
                                   {pearson.toFixed(3)}
                                 </span>
                               </td>
-                              <td className="px-4 py-3 text-center border-r border-gray-300">
-                                <span className="text-gray-700">{spearman.toFixed(3)}</span>
+                              <td className="px-4 py-3 text-center border-r border-border">
+                                <span className="text-foreground">{spearman.toFixed(3)}</span>
                               </td>
-                              <td className="px-4 py-3 text-center border-r border-gray-300">
-                                <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${strength === 'Strong' ? 'bg-green-100 text-green-800' :
-                                  strength === 'Moderate' ? 'bg-amber-100 text-amber-800' :
-                                    strength === 'Weak' ? 'bg-orange-100 text-orange-800' :
-                                      'bg-gray-100 text-gray-800'
+                              <td className="px-4 py-3 text-center border-r border-border">
+                                <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${strength === 'Strong' ? 'bg-success-light text-success' :
+                                  strength === 'Moderate' ? 'bg-warning-light text-warning' :
+                                    strength === 'Weak' ? 'bg-chart-orange/20 text-chart-orange' :
+                                      'bg-muted text-muted-foreground'
                                   }`}>
                                   {strength}
                                 </span>
                               </td>
                               <td className="px-4 py-3">
-                                <div className="text-sm text-gray-700 bg-blue-50 p-2 rounded">
+                                <div className="text-sm text-foreground bg-info-light p-2 rounded">
                                   {aiExplanation}
                                 </div>
                               </td>
@@ -830,11 +830,11 @@ export default function Dashboard({ csvLoaded }: { csvLoaded: boolean }) {
                   </div>
                 </div>
               ) : correlationData && correlationData.total_correlations === 0 ? (
-                <div className="text-center py-8 text-gray-500 text-sm">
+                <div className="text-center py-8 text-muted-foreground text-sm">
                   No correlations found. Make sure both files have numeric columns and the same number of rows.
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-500 text-sm">
+                <div className="text-center py-8 text-muted-foreground text-sm">
                   Correlations will be calculated automatically when both files are loaded.
                 </div>
               )}

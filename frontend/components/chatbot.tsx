@@ -451,13 +451,13 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
   }
 
   return (
-    <div className="flex flex-col h-full p-4 bg-white overflow-hidden">
-      <Card className="flex-1 flex flex-col border border-gray-300 shadow-none overflow-hidden">
-        <CardHeader className="border-b border-gray-300 bg-white pb-3">
+    <div className="flex flex-col h-full p-4 bg-background overflow-hidden">
+      <Card className="flex-1 flex flex-col border border-border shadow-none overflow-hidden">
+        <CardHeader className="border-b border-border bg-card pb-3">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-base font-medium text-black">Data Analysis</CardTitle>
-              <CardDescription className="mt-0.5 text-xs text-gray-500">
+              <CardTitle className="text-base font-medium text-foreground">Data Analysis</CardTitle>
+              <CardDescription className="mt-0.5 text-xs text-muted-foreground">
                 Upload a CSV file and ask questions about your data using natural language
               </CardDescription>
             </div>
@@ -465,12 +465,12 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
         </CardHeader>
         <CardContent className="flex-1 flex flex-col overflow-hidden p-6 min-h-0">
           {/* Data Source Toggle */}
-          <div className="flex gap-2 mb-4 pb-2 border-b border-gray-100">
+          <div className="flex gap-2 mb-4 pb-2 border-b border-border">
             <Button
               variant={dataSource === 'csv' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setDataSource('csv')}
-              className={dataSource === 'csv' ? "bg-black text-white" : "text-gray-600"}
+              className={dataSource === 'csv' ? "bg-primary text-primary-foreground" : "text-muted-foreground"}
             >
               <Upload className="h-4 w-4 mr-2" />
               CSV Upload
@@ -479,7 +479,7 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
               variant={dataSource === 'db' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setDataSource('db')}
-              className={dataSource === 'db' ? "bg-black text-white" : "text-gray-600"}
+              className={dataSource === 'db' ? "bg-primary text-primary-foreground" : "text-muted-foreground"}
             >
               <Database className="h-4 w-4 mr-2" />
               Database
@@ -487,7 +487,7 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
           </div>
 
           {/* Data Source UI */}
-          <div className="mb-4 pb-4 border-b border-gray-300 flex-shrink-0">
+          <div className="mb-4 pb-4 border-b border-border flex-shrink-0">
             {dataSource === 'db' ? (
               <div className="space-y-4">
                 {!connected ? (
@@ -516,7 +516,7 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
                       <label className="text-xs font-medium">Password</label>
                       <Input type="password" value={dbConfig.password} onChange={e => setDbConfig({ ...dbConfig, password: e.target.value })} className="h-8" />
                     </div>
-                    <Button onClick={handleConnect} disabled={connecting} className="w-full h-8 bg-blue-600 hover:bg-blue-700 text-white">
+                    <Button onClick={handleConnect} disabled={connecting} className="w-full h-8 bg-info hover:bg-info/90 text-info-foreground">
                       {connecting ? <Loader2 className="h-3 w-3 animate-spin mr-2" /> : <Server className="h-3 w-3 mr-2" />}
                       Connect
                     </Button>
@@ -524,13 +524,13 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
                 ) : (
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-green-600">Connected to {dbConfig.dbname}</span>
-                      <Button variant="ghost" size="sm" onClick={() => setConnected(false)} className="h-6 text-xs text-red-500">Disconnect</Button>
+                      <span className="text-sm font-medium text-success">Connected to {dbConfig.dbname}</span>
+                      <Button variant="ghost" size="sm" onClick={() => setConnected(false)} className="h-6 text-xs text-error">Disconnect</Button>
                     </div>
-                    <div className="text-xs text-gray-500 mb-2">Select a table to analyze:</div>
-                    <div className="max-h-40 overflow-y-auto space-y-1 border rounded p-2">
+                    <div className="text-xs text-muted-foreground mb-2">Select a table to analyze:</div>
+                    <div className="max-h-40 overflow-y-auto space-y-1 border border-border rounded p-2">
                       {dbTables.map(table => (
-                        <div key={table} className="flex items-center justify-between p-1 hover:bg-gray-50 rounded">
+                        <div key={table} className="flex items-center justify-between p-1 hover:bg-accent rounded">
                           <span className="text-sm font-mono truncate max-w-[120px]" title={table}>{table}</span>
                           <div className="flex gap-1">
                             <Button
@@ -558,15 +558,15 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
 
                 {/* Show Selected Status even in DB mode */}
                 {(csvInfo || csvInfo2) && (
-                  <div className="mt-3 pt-3 border-t">
+                  <div className="mt-3 pt-3 border-t border-border">
                     {csvInfo && (
-                      <div className="flex items-center gap-2 text-sm text-green-700 mb-1">
+                      <div className="flex items-center gap-2 text-sm text-file1 mb-1">
                         <CheckCircle2 className="h-3 w-3" />
                         <span className="truncate">File 1: {fileName} ({csvInfo.rows} rows)</span>
                       </div>
                     )}
                     {csvInfo2 && (
-                      <div className="flex items-center gap-2 text-sm text-blue-700">
+                      <div className="flex items-center gap-2 text-sm text-file2">
                         <CheckCircle2 className="h-3 w-3" />
                         <span className="truncate">File 2: {fileName2} ({csvInfo2.rows} rows)</span>
                       </div>
@@ -580,7 +580,7 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
                 {/* File 1 Upload */}
                 <div className="flex items-center gap-3 flex-wrap">
                   <label htmlFor="file-upload-1" className="cursor-pointer">
-                    <Button variant="outline" asChild disabled={uploading} className="gap-2 border-gray-300 text-black hover:bg-gray-50">
+                    <Button variant="outline" asChild disabled={uploading} className="gap-2 border-border text-foreground hover:bg-accent">
                       <span>
                         {uploading ? (
                           <>
@@ -605,12 +605,12 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
                     className="hidden"
                   />
                   {csvInfo && (
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-md border border-green-200">
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-file1-light rounded-md border border-file1-border">
+                      <CheckCircle2 className="h-4 w-4 text-file1" />
                       <div className="flex items-center gap-3">
                         <div className="text-sm">
-                          <span className="font-medium text-green-700">{fileName}</span>
-                          <span className="text-gray-600 ml-2">
+                          <span className="font-medium text-file1">{fileName}</span>
+                          <span className="text-muted-foreground ml-2">
                             {csvInfo.rows.toLocaleString()} rows × {csvInfo.columns} columns
                           </span>
                         </div>
@@ -618,7 +618,7 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleRemoveFile(1)}
-                          className="h-6 w-6 p-0 hover:bg-green-100 text-green-700"
+                          className="h-6 w-6 p-0 hover:bg-file1-light text-file1"
                         >
                           <X className="h-3 w-3" />
                         </Button>
@@ -630,7 +630,7 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
                 {/* File 2 Upload */}
                 <div className="flex items-center gap-3 flex-wrap">
                   <label htmlFor="file-upload-2" className="cursor-pointer">
-                    <Button variant="outline" asChild disabled={uploading} className="gap-2 border-gray-300 text-black hover:bg-gray-50">
+                    <Button variant="outline" asChild disabled={uploading} className="gap-2 border-border text-foreground hover:bg-accent">
                       <span>
                         {uploading ? (
                           <>
@@ -655,12 +655,12 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
                     className="hidden"
                   />
                   {csvInfo2 && (
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-md border border-blue-200">
-                      <CheckCircle2 className="h-4 w-4 text-blue-600" />
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-file2-light rounded-md border border-file2-border">
+                      <CheckCircle2 className="h-4 w-4 text-file2" />
                       <div className="flex items-center gap-3">
                         <div className="text-sm">
-                          <span className="font-medium text-blue-700">{fileName2}</span>
-                          <span className="text-gray-600 ml-2">
+                          <span className="font-medium text-file2">{fileName2}</span>
+                          <span className="text-muted-foreground ml-2">
                             {csvInfo2.rows.toLocaleString()} rows × {csvInfo2.columns} columns
                           </span>
                         </div>
@@ -668,7 +668,7 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleRemoveFile(2)}
-                          className="h-6 w-6 p-0 hover:bg-blue-100 text-blue-700"
+                          className="h-6 w-6 p-0 hover:bg-file2-light text-file2"
                         >
                           <X className="h-3 w-3" />
                         </Button>
@@ -687,7 +687,7 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
                   </div>
                 )}
                 {csvInfo && csvInfo2 && (
-                  <div className="mt-2 text-xs text-blue-600 font-medium">
+                  <div className="mt-2 text-xs text-info font-medium">
                     🔗 Both files loaded! You can analyze correlations between columns from both files.
                   </div>
                 )}
@@ -720,20 +720,20 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
                 >
                   <div
                     className={`max-w-[85%] rounded-lg px-4 py-3 ${message.role === "user"
-                      ? "bg-black text-white"
-                      : "bg-gray-50 border border-gray-300 text-black"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted border border-border text-foreground"
                       }`}
                   >
                     <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
                     {message.error && (
-                      <div className="mt-2 p-2 bg-gray-50 rounded text-xs text-black border border-gray-300">
+                      <div className="mt-2 p-2 bg-muted rounded text-xs text-foreground border border-border">
                         {message.error}
                       </div>
                     )}
                     {message.resultData && message.resultType === "dataframe" && (
-                      <div className="mt-3 p-2 bg-white rounded text-xs border border-gray-300">
-                        <div className="font-medium mb-1 text-black">Data Preview:</div>
-                        <pre className="overflow-x-auto text-xs text-black">
+                      <div className="mt-3 p-2 bg-card rounded text-xs border border-border">
+                        <div className="font-medium mb-1 text-foreground">Data Preview:</div>
+                        <pre className="overflow-x-auto text-xs text-foreground">
                           {JSON.stringify(message.resultData.slice(0, 5), null, 2)}
                           {message.resultData.length > 5 && `\n... (${message.resultData.length - 5} more rows)`}
                         </pre>
@@ -745,10 +745,10 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
             )}
             {loading && (
               <div className="flex justify-start">
-                <div className="bg-gray-50 rounded-lg px-4 py-3 border border-gray-300">
+                <div className="bg-muted rounded-lg px-4 py-3 border border-border">
                   <div className="flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin text-black" />
-                    <span className="text-sm text-black">Analyzing your data...</span>
+                    <Loader2 className="h-4 w-4 animate-spin text-foreground" />
+                    <span className="text-sm text-foreground">Analyzing your data...</span>
                   </div>
                 </div>
               </div>
@@ -757,7 +757,7 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
           </div>
 
           {/* Input Area */}
-          <div className="flex gap-2 pt-2 border-t border-gray-300 flex-shrink-0">
+          <div className="flex gap-2 pt-2 border-t border-border flex-shrink-0">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -768,13 +768,13 @@ export default function Chatbot({ onCsvLoadedChange }: ChatbotProps) {
                   : "Upload a CSV file first..."
               }
               disabled={loading || !csvLoaded}
-              className="flex-1 border-gray-300 text-black placeholder:text-gray-400 focus:border-gray-400"
+              className="flex-1 border-border text-foreground placeholder:text-muted-foreground focus:border-ring"
             />
             <Button
               onClick={handleSend}
               disabled={loading || !csvLoaded || !input.trim()}
               size="default"
-              className="bg-black text-white hover:bg-gray-800 border border-black"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 border border-primary"
             >
               {loading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
