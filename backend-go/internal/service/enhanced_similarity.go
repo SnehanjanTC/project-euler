@@ -13,17 +13,21 @@ import (
 
 // EnhancedSimilarityService provides advanced column matching capabilities
 type EnhancedSimilarityService struct {
-	contextService *ContextService
-	synonyms       map[string][]string
-	patterns       map[string]*regexp.Regexp
+	contextService    *ContextService
+	synonyms          map[string][]string
+	patterns          map[string]*regexp.Regexp
+	normalizedMatcher *NormalizedValueMatcher
+	qualityProfiler   *DataQualityProfiler
 }
 
 // NewEnhancedSimilarityService creates a new enhanced similarity service
 func NewEnhancedSimilarityService(ctx *ContextService) *EnhancedSimilarityService {
 	svc := &EnhancedSimilarityService{
-		contextService: ctx,
-		synonyms:       buildSynonymMap(),
-		patterns:       buildPatternMap(),
+		contextService:    ctx,
+		synonyms:          buildSynonymMap(),
+		patterns:          buildPatternMap(),
+		normalizedMatcher: NewNormalizedValueMatcher(),
+		qualityProfiler:   NewDataQualityProfiler(),
 	}
 	return svc
 }
@@ -36,42 +40,42 @@ func buildSynonymMap() map[string][]string {
 		"cost":    {"price", "amount", "value", "fee", "charge", "expense"},
 		"amount":  {"price", "cost", "value", "total", "sum", "quantity"},
 		"revenue": {"income", "sales", "earnings", "profit"},
-		
+
 		// Identity
 		"id":         {"identifier", "key", "code", "number", "num", "no"},
 		"identifier": {"id", "key", "code", "number"},
 		"code":       {"id", "identifier", "key", "number"},
 		"number":     {"id", "num", "no", "code"},
-		
+
 		// Person
 		"name":      {"fullname", "title", "label", "description"},
 		"firstname": {"first", "fname", "givenname", "given"},
 		"lastname":  {"last", "lname", "surname", "family"},
 		"email":     {"mail", "emailaddress", "emailid"},
 		"phone":     {"mobile", "cell", "telephone", "tel", "contact"},
-		
+
 		// Address
-		"address":  {"location", "addr", "street"},
-		"city":     {"town", "municipality", "place"},
-		"state":    {"province", "region", "territory"},
-		"country":  {"nation", "countrycode"},
-		"zip":      {"zipcode", "postal", "postalcode", "pincode"},
-		
+		"address": {"location", "addr", "street"},
+		"city":    {"town", "municipality", "place"},
+		"state":   {"province", "region", "territory"},
+		"country": {"nation", "countrycode"},
+		"zip":     {"zipcode", "postal", "postalcode", "pincode"},
+
 		// Date/Time
 		"date":      {"datetime", "timestamp", "time", "dt"},
 		"created":   {"createdat", "createddate", "creationdate", "created_at"},
 		"updated":   {"updatedat", "updateddate", "modifieddate", "modified", "updated_at"},
 		"startdate": {"start", "begin", "from", "fromdate"},
 		"enddate":   {"end", "finish", "to", "todate"},
-		
+
 		// Status
 		"status": {"state", "condition", "flag", "active", "enabled"},
 		"type":   {"category", "kind", "class", "classification"},
-		
+
 		// Quantity
 		"quantity": {"qty", "count", "num", "amount", "units"},
 		"count":    {"quantity", "qty", "total", "num"},
-		
+
 		// Description
 		"description": {"desc", "details", "info", "notes", "comment", "remarks"},
 		"notes":       {"description", "comments", "remarks", "memo"},
@@ -81,15 +85,15 @@ func buildSynonymMap() map[string][]string {
 // buildPatternMap creates regex patterns for common data formats
 func buildPatternMap() map[string]*regexp.Regexp {
 	return map[string]*regexp.Regexp{
-		"email":     regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`),
-		"phone":     regexp.MustCompile(`^[\+]?[(]?[0-9]{1,4}[)]?[-\s\./0-9]*$`),
-		"uuid":      regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`),
-		"date_iso":  regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`),
-		"date_us":   regexp.MustCompile(`^\d{2}/\d{2}/\d{4}$`),
-		"ip":        regexp.MustCompile(`^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$`),
-		"url":       regexp.MustCompile(`^https?://`),
-		"currency":  regexp.MustCompile(`^[\$€£¥₹]?\s*\d+([,.]\d{2})?$`),
-		"zipcode":   regexp.MustCompile(`^\d{5}(-\d{4})?$`),
+		"email":    regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`),
+		"phone":    regexp.MustCompile(`^[\+]?[(]?[0-9]{1,4}[)]?[-\s\./0-9]*$`),
+		"uuid":     regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`),
+		"date_iso": regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`),
+		"date_us":  regexp.MustCompile(`^\d{2}/\d{2}/\d{4}$`),
+		"ip":       regexp.MustCompile(`^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$`),
+		"url":      regexp.MustCompile(`^https?://`),
+		"currency": regexp.MustCompile(`^[\$€£¥₹]?\s*\d+([,.]\d{2})?$`),
+		"zipcode":  regexp.MustCompile(`^\d{5}(-\d{4})?$`),
 	}
 }
 
@@ -106,12 +110,12 @@ type SimilarityResult struct {
 	JSONConfidence         float64 `json:"json_confidence"`
 	LLMSemanticScore       float64 `json:"llm_semantic_score"`
 	Reason                 string  `json:"reason,omitempty"`
-	
+
 	// Enhanced metrics
-	TokenSimilarity    float64 `json:"token_similarity"`
-	SynonymMatch       bool    `json:"synonym_match"`
-	PatternMatch       string  `json:"pattern_match,omitempty"`
-	ValueOverlap       float64 `json:"value_overlap"`
+	TokenSimilarity float64 `json:"token_similarity"`
+	SynonymMatch    bool    `json:"synonym_match"`
+	PatternMatch    string  `json:"pattern_match,omitempty"`
+	ValueOverlap    float64 `json:"value_overlap"`
 }
 
 // CalculateEnhancedSimilarity performs comprehensive similarity analysis
@@ -124,7 +128,7 @@ func (s *EnhancedSimilarityService) CalculateEnhancedSimilarity(
 	for col1Idx, col1 := range df1.Headers {
 		for col2Idx, col2 := range df2.Headers {
 			result := s.compareColumns(df1, df2, col1Idx, col2Idx, col1, col2, ctx1, ctx2)
-			
+
 			// Only include if has meaningful similarity
 			if result.Confidence > 10 {
 				results = append(results, result)
@@ -168,7 +172,19 @@ func (s *EnhancedSimilarityService) compareColumns(
 	}
 	result.JSONConfidence = patternScore
 
-	// 3. Value Overlap (Jaccard for categorical, distribution for numeric)
+	// 3. Data Quality Profiling (NEW)
+	profile1 := s.qualityProfiler.ProfileColumn(df1, col1Idx)
+	profile2 := s.qualityProfiler.ProfileColumn(df2, col2Idx)
+	qualityMatch := s.qualityProfiler.CompareQuality(profile1, profile2)
+
+	// 4. Cardinality Analysis (NEW)
+	cardinalityMatch := s.normalizedMatcher.CalculateCardinalityMatch(profile1, profile2)
+
+	// 5. Format Normalization & Value Matching (NEW)
+	normalizedMatch := s.normalizedMatcher.CalculateNormalizedMatch(df1, df2, col1Idx, col2Idx)
+	formatTransform, formatType := s.normalizedMatcher.DetectFormatTransformation(df1, df2, col1Idx, col2Idx)
+
+	// 6. Traditional Value Overlap (for categorical) or Distribution (for numeric)
 	numericCols1 := df1.GetNumericColumnIndices()
 	numericCols2 := df2.GetNumericColumnIndices()
 	isNum1, isNum2 := numericCols1[col1Idx], numericCols2[col2Idx]
@@ -178,42 +194,58 @@ func (s *EnhancedSimilarityService) compareColumns(
 		result.DistributionSimilarity = s.calculateDistributionSimilarity(df1, df2, col1Idx, col2Idx)
 		result.DataSimilarity = result.DistributionSimilarity
 	} else if !isNum1 && !isNum2 {
-		// Categorical: value overlap
-		result.ValueOverlap = s.calculateValueOverlap(df1, df2, col1Idx, col2Idx)
+		// Categorical: use normalized match if better than raw overlap
+		rawOverlap := s.calculateValueOverlap(df1, df2, col1Idx, col2Idx)
+		result.ValueOverlap = math.Max(rawOverlap, normalizedMatch)
 		result.DataSimilarity = result.ValueOverlap
 	}
 
-	// 4. Get adaptive weights
+	// 7. Get adaptive weights
 	adaptiveLearner := GetAdaptiveLearner()
 	weights := adaptiveLearner.GetWeights()
-	
-	// 5. Calculate Final Confidence using adaptive weights
+
+	// 8. Calculate Final Confidence using ENHANCED weights
+	// Include new signals: quality, cardinality, normalized matching
 	result.Confidence = (result.NameSimilarity * weights.Name * 100) +
 		(result.DataSimilarity * weights.Data * 100) +
 		(patternScore * weights.Pattern * 100) +
-		(result.LLMSemanticScore * weights.LLM * 100)
+		(result.LLMSemanticScore * weights.LLM * 100) +
+		(qualityMatch * 10) + // NEW: Quality boost up to 10%
+		(cardinalityMatch * 15) + // NEW: Cardinality boost up to 15%
+		(normalizedMatch * 10) // NEW: Normalized match boost up to 10%
 
-	// 6. Apply learned boosts from feedback
+	// 9. Format transformation bonus (NEW)
+	if formatTransform {
+		result.Confidence = math.Min(100, result.Confidence*1.25) // 25% boost for format matches
+		result.PatternMatch = formatType + "_transform"
+	}
+
+	// 10. Apply learned boosts from feedback
 	feedbackSystem := GetFeedbackSystem()
 	feedbackBoost := feedbackSystem.GetLearnedBoost(col1, col2)
 	result.Confidence += feedbackBoost * 100
 
-	// 7. Apply pattern learning boost
+	// 11. Apply pattern learning boost
 	patternLearner := GetPatternLearner()
 	patternBoost := patternLearner.GetPatternBoost(col1, col2)
 	result.Confidence += patternBoost * 100
 
-	// 8. Boost for synonym matches
+	// 12. Boost for synonym matches
 	if isSynonym {
 		result.Confidence = math.Min(100, result.Confidence*1.2)
 	}
 
-	// 9. Context boost
+	// 13. Primary key matching bonus (NEW)
+	if profile1.IsPrimaryKey && profile2.IsPrimaryKey && normalizedMatch > 0.5 {
+		result.Confidence = math.Min(100, result.Confidence*1.3) // Strong boost for matching PKs
+	}
+
+	// 14. Context boost
 	if ctx1 != nil && ctx2 != nil {
 		result.Confidence = s.applyContextBoost(result.Confidence, col1, col2, ctx1, ctx2)
 	}
 
-	// 10. Apply confidence calibration
+	// 15. Apply confidence calibration
 	calibrator := GetConfidenceCalibrator()
 	result.Confidence = calibrator.Calibrate(result.Confidence)
 
@@ -229,12 +261,20 @@ func (s *EnhancedSimilarityService) compareColumns(
 	result.Type = s.determineType(result)
 	result.Similarity = result.Confidence / 100
 
-	// Build reason string
-	result.Reason = s.buildReason(result, isSynonym)
+	// Build ENHANCED reason string (NEW)
+	result.Reason = s.normalizedMatcher.ExplainMatch(
+		col1, col2,
+		result.NameSimilarity,
+		result.DataSimilarity,
+		normalizedMatch,
+		cardinalityMatch,
+		profile1, profile2,
+		formatTransform,
+		formatType,
+	)
 
 	return result
 }
-
 
 // calculateTokenSimilarity compares tokenized column names with synonym matching
 func (s *EnhancedSimilarityService) calculateTokenSimilarity(col1, col2 string) (float64, bool) {
