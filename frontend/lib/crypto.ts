@@ -16,6 +16,9 @@ const SALT_KEY = 'crypto_salt_v1'
  */
 async function deriveEncryptionKey(): Promise<CryptoKey> {
     // Get or create salt
+    if (typeof window === "undefined" || typeof localStorage === "undefined" || typeof crypto === "undefined") {
+        return {} as CryptoKey // Should not be called during build
+    }
     let salt = localStorage.getItem(SALT_KEY)
     if (!salt) {
         const saltBuffer = crypto.getRandomValues(new Uint8Array(16))
@@ -25,11 +28,11 @@ async function deriveEncryptionKey(): Promise<CryptoKey> {
 
     // Create a simple fingerprint from browser characteristics
     const fingerprint = [
-        navigator.userAgent,
-        navigator.language,
-        new Date().getTimezoneOffset().toString(),
-        screen.colorDepth.toString(),
-        salt
+        typeof navigator !== "undefined" ? navigator.userAgent : 'build-agent',
+        typeof navigator !== "undefined" ? navigator.language : 'en-US',
+        typeof window !== "undefined" ? new Date().getTimezoneOffset().toString() : '0',
+        typeof window !== "undefined" ? screen.colorDepth.toString() : '24',
+        salt || 'static-salt'
     ].join('|')
 
     // Convert fingerprint to key material
@@ -63,6 +66,9 @@ async function deriveEncryptionKey(): Promise<CryptoKey> {
  * Encrypt a string value
  */
 export async function encryptValue(plaintext: string): Promise<string> {
+    if (typeof window === "undefined" || typeof crypto === "undefined" || typeof crypto.subtle === "undefined") {
+        return ""
+    }
     try {
         const key = await deriveEncryptionKey()
         const encoder = new TextEncoder()
@@ -83,10 +89,11 @@ export async function encryptValue(plaintext: string): Promise<string> {
         combined.set(iv)
         combined.set(new Uint8Array(encrypted), iv.length)
 
-        return btoa(String.fromCharCode(...combined))
+        return btoa(String.fromCharCode(...Array.from(combined)))
     } catch (error) {
-        console.error('Encryption error:', error)
-        throw new Error('Failed to encrypt value')
+        console.error('CRYPTO_ENCRYPT_ERROR details:', error)
+        console.trace('CRYPTO_ENCRYPT call stack:')
+        throw new Error('CRYPTO_ENCRYPT_FAIL')
     }
 }
 
@@ -94,6 +101,9 @@ export async function encryptValue(plaintext: string): Promise<string> {
  * Decrypt an encrypted string
  */
 export async function decryptValue(encrypted: string): Promise<string> {
+    if (typeof window === "undefined" || typeof crypto === "undefined" || typeof crypto.subtle === "undefined") {
+        return ""
+    }
     try {
         const key = await deriveEncryptionKey()
 
@@ -115,8 +125,8 @@ export async function decryptValue(encrypted: string): Promise<string> {
         const decoder = new TextDecoder()
         return decoder.decode(decrypted)
     } catch (error) {
-        console.error('Decryption error:', error)
-        throw new Error('Failed to decrypt value')
+        console.error('CRYPTO_DECRYPT_ERROR details:', error)
+        throw new Error('CRYPTO_DECRYPT_FAIL')
     }
 }
 
